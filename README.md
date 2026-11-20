@@ -2,6 +2,8 @@
 
 《Digimon Story: Time Stranger》475 只数码兽的离线图鉴与谱系图，单个 `index.html` 即可运行，无构建、无依赖、可离线打开。
 
+**在线预览 / Live demo**：https://kazuko2012.github.io/digimon-time-stranger-guide/
+
 An offline field guide and evolution-graph explorer for all 475 Digimon in *Digimon Story: Time Stranger*. Everything runs from a single `index.html` — no build step, no runtime dependencies.
 
 ---
@@ -73,7 +75,7 @@ python3 scripts/build_single.py
 
 推到 `main` 分支后，GitHub Actions 会把这个仓库发布到 GitHub Pages：
 
-`https://<你的用户名>.github.io/digimon-time-stranger-guide/`
+`https://kazuko2012.github.io/digimon-time-stranger-guide/`
 
 仓库设置里把 **Settings → Pages → Source** 选为 **GitHub Actions** 即可。
 
