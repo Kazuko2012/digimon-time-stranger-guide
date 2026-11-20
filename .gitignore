@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+._*
+
+# 本地构建产物
+dist/
+*.zip
+
+# 编辑器
+.vscode/
+.idea/
