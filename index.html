@@ -612,17 +612,40 @@ const $ = s=>document.querySelector(s);
 
 /* ================= 白天 / 夜间模式 ================= */
 const THEME_KEY='ts-theme';
-function themeApply(t){
+const MQ_LIGHT = (function(){ try{ return window.matchMedia('(prefers-color-scheme: light)'); }catch(e){ return null; } })();
+function themeApply(t, save){
   const light = t==='light';
   document.body.classList.toggle('light',light);
   const b=document.getElementById('themeBtn');
-  if(b) b.textContent = light?'☾ 夜间模式':'☀ 白天模式';
-  try{ localStorage.setItem(THEME_KEY,t); }catch(e){}
+  if(b){
+    b.textContent = light?'☾ 夜间模式':'☀ 白天模式';
+    b.title = light?'当前为白天模式，点击切换夜间':'当前为夜间模式，点击切换白天';
+  }
+  if(save){ try{ localStorage.setItem(THEME_KEY,t); }catch(e){} }
   if(typeof window.__lvRedraw==='function') window.__lvRedraw();
 }
-function themeToggle(){ themeApply(document.body.classList.contains('light')?'dark':'light'); }
-(function(){ let t='dark'; try{ t=localStorage.getItem(THEME_KEY)||'dark'; }catch(e){}; try{ const q=new URLSearchParams(location.search).get('theme'); if(q==='light'||q==='dark') t=q; }catch(e){}; themeApply(t); })();
+/* 优先级：链接参数 > 手动记忆 > 系统外观 > 兜底深色 */
+function themeFromQuery(){ try{ const q=new URLSearchParams(location.search).get('theme'); return (q==='light'||q==='dark')?q:null; }catch(e){ return null; } }
+function themeSaved(){ try{ const v=localStorage.getItem(THEME_KEY); return (v==='light'||v==='dark')?v:null; }catch(e){ return null; } }
+function themeAuto(){ return (MQ_LIGHT && MQ_LIGHT.matches) ? 'light' : 'dark'; }
+function themeInit(){
+  const q=themeFromQuery(); if(q){ themeApply(q,false); return; }
+  const s=themeSaved(); if(s){ themeApply(s,false); return; }
+  themeApply(themeAuto(),false);
+}
+function themeToggle(){
+  themeApply(document.body.classList.contains('light')?'dark':'light', true);
+}
+themeInit();
 document.getElementById('themeBtn').onclick=themeToggle;
+if(MQ_LIGHT){
+  const onSysChange=function(){
+    if(themeFromQuery()||themeSaved()) return;
+    themeApply(themeAuto(),false);
+  };
+  if(MQ_LIGHT.addEventListener) MQ_LIGHT.addEventListener('change',onSysChange);
+  else if(MQ_LIGHT.addListener) MQ_LIGHT.addListener(onSysChange);
+}
 
 const stageColor = {
   '幼年期Ⅰ':'#6fd0ff','幼年期Ⅱ':'#6fd0ff','成长期':'#63e6be','成熟期':'#ffd166',
