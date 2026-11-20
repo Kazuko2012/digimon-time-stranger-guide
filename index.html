@@ -421,6 +421,21 @@ body.light .dx-tip{color:#7b8aa2}
 body.light .ptip{background:rgba(255,255,255,.98);border-color:rgba(15,131,184,.5);color:#22324a;box-shadow:0 10px 26px rgba(30,50,90,.18)}
 body.light .ptip b{color:#0b2233}
 body.light .ptip .up{color:#0d7a50}
+.ctip{position:fixed;z-index:92;width:max-content;max-width:330px;padding:10px 12px;border-radius:11px;font-size:11.5px;line-height:1.8;
+  pointer-events:none;opacity:0;transform:translateY(-4px);transition:opacity .12s,transform .12s;
+  background:rgba(12,20,40,.97);border:1px solid rgba(79,216,255,.5);color:#dbe8ff;
+  box-shadow:0 12px 30px rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+.ctip.on{opacity:1;transform:none}
+.ctip .h{font-size:11px;color:#8fb6e6;letter-spacing:.04em;margin-bottom:5px}
+.ctip .h b{color:#fff;font-weight:700}
+.ctip li{list-style:none;display:flex;gap:6px;align-items:flex-start}
+.ctip li em{color:#4fd8ff;font-style:normal;flex:none}
+.ctip .none{color:#9fb3d6}
+body.light .ctip{background:rgba(255,255,255,.98);border-color:rgba(15,131,184,.5);color:#22324a;box-shadow:0 12px 30px rgba(30,50,90,.18)}
+body.light .ctip .h{color:#5a7290}
+body.light .ctip .h b{color:#0b2233}
+body.light .ctip li em{color:#0f83b8}
+body.light .ctip .none{color:#6a7f9c}
 body.light .ptip .dn{color:#c22a63}
 .dx-desc{font-size:11.5px;line-height:1.85;color:#c3d4ee}
 body.light .dx-sk{background:#fff;border-color:rgba(20,45,90,.10)}
@@ -1096,7 +1111,45 @@ function persTip(){
   }
   return __ptip;
 }
-document.addEventListener('scroll',()=>{ if(__ptip) __ptip.classList.remove('on'); },true);
+document.addEventListener('scroll',()=>{ if(__ptip) __ptip.classList.remove('on'); if(__ctip) __ctip.classList.remove('on'); },true);
+
+/* 悬停「进化后」条目：显示进化成该形态所需的条件 */
+let __ctip=null;
+function escTxt(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function condTip(){
+  if(__ctip) return __ctip;
+  __ctip=document.createElement('div'); __ctip.className='ctip'; document.body.appendChild(__ctip);
+  const db=document.getElementById('dbody'); if(!db) return __ctip;
+  const pick=ev=>ev.target.closest && ev.target.closest('.ritem[data-role="x"]');
+  db.addEventListener('mouseover',ev=>{
+    const it=pick(ev); if(!it) return;
+    const o=BY[+it.dataset.n]; if(!o) return;
+    const cs=(o.c||[]).filter(x=>x&&x!=='无');
+    __ctip.innerHTML=`<div class="h">进化为 <b>${escTxt(nameOf(o))}</b> 的条件</div>`
+      + (cs.length?`<ul style="margin:0;padding:0">${cs.map(c=>`<li><em>◆</em><span>${escTxt(c)}</span></li>`).join('')}</ul>`
+                 :`<div class="none">无特殊条件</div>`);
+    placeCtip(ev);
+    __ctip.classList.add('on');
+  },true);
+  function placeCtip(ev){
+    const w=__ctip.offsetWidth,h=__ctip.offsetHeight;
+    if(!w&&!h) return;
+    let x=ev.clientX+16, y=ev.clientY-h-14;
+    if(x+w>window.innerWidth-8) x=Math.max(8,ev.clientX-w-16);
+    if(y<8) y=ev.clientY+18;
+    if(y+h>window.innerHeight-8) y=Math.max(8,window.innerHeight-h-8);
+    __ctip.style.left=x+'px'; __ctip.style.top=y+'px';
+  }
+  db.addEventListener('mousemove',ev=>{
+    if(!__ctip.classList.contains('on')) return;
+    if(!pick(ev)){ __ctip.classList.remove('on'); return; }
+    placeCtip(ev);
+  },true);
+  db.addEventListener('mouseout',ev=>{
+    if(!(ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest('.ritem[data-role="x"]'))) __ctip.classList.remove('on');
+  },true);
+  return __ctip;
+}
 function dxHTML(n){
   const e=EXTRA[n]; if(!e) return '';
   const LS=[['hp','最大HP'],['sp','最大SP'],['atk','攻击'],['def','防御'],['int','智力'],['spi','精神'],['spd','敏捷']];
@@ -1152,11 +1205,12 @@ function dxHTML(n){
 }
 function openDrawer(n){
   const d=BY[n]; if(!d) return;
+  if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on');
   const sc=stageColor[d.s]||'#8fa4c9', ac=attrColor[d.a]||'var(--unk)';
   const conds = d.c.length ? `<ul class="cond">${d.c.map(c=>`<li><em>◆</em><span>${c}</span></li>`).join('')}</ul>` : `<div style="color:var(--sub);font-size:13px">无特殊条件</div>`;
-  const relItems = arr => arr.length ? arr.map(k=>{
+  const relItems = (arr,role) => arr.length ? arr.map(k=>{
     const o=BY[k]; const c2=stageColor[o.s]||'#8fa4c9';
-    return `<div class="ritem" data-n="${k}">
+    return `<div class="ritem" data-n="${k}" data-role="${role||''}">
       <img width="112" height="112" decoding="async" src="${iconPath(k)}" onerror="this.style.opacity=0">
       <div class="tx"><b>${nameOf(o)}</b><span>No.${String(k).padStart(3,'0')} · ${o.jp!==o.cn?o.jp:o.t}</span></div>
       <span class="stg" style="color:${c2};border-color:${c2}55">${o.s}</span>
@@ -1191,12 +1245,12 @@ function openDrawer(n){
 
     <div class="sec">
       <div class="sec-h"><i></i>可退化自（进化前）<span class="n">${d.v.length}</span></div>
-      <div class="rel">${relItems(d.v)}</div>
+      <div class="rel">${relItems(d.v,"v")}</div>
     </div>
 
     <div class="sec">
-      <div class="sec-h"><i></i>可进化为（进化后）<span class="n">${d.x.length}</span></div>
-      <div class="rel">${relItems(d.x)}</div>
+      <div class="sec-h"><i></i>可进化为（进化后）<span class="n">${d.x.length}${d.x.length?' · 悬停查看进化条件':''}</span></div>
+      <div class="rel">${relItems(d.x,"x")}</div>
     </div>
 
     ${dxHTML(n)}
@@ -1208,9 +1262,10 @@ function openDrawer(n){
   $('#fromHere').onclick=()=>{ openPath(nameOf(d)); };
   $('#lvHere').onclick=()=>{ closeDrawer(); if(typeof setView==='function'){ setView('lineage'); setCenter(d.n); if(typeof lsearch!=='undefined') lsearch.value=nameOf(d); } };
   if(typeof persTip==='function') persTip();
+  if(typeof condTip==='function') condTip();
   $('#drawer').classList.add('on'); $('#mask').classList.add('on');
 }
-function closeDrawer(){ $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); }
+function closeDrawer(){ $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
 
 // ---- path finder ----
 const adjCache={};
