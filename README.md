@@ -8,7 +8,7 @@ An offline field guide and evolution-graph explorer for all 475 Digimon in *Digi
 
 ## 多语言 / Languages
 
-右上角可切换 **中文 / English / 日本語**，并记忆上次选择、支持深链 `?lang=en` / `?lang=ja`。
+顶部工具栏可切换 **中文 / English / 日本語**（桌面在右侧按钮组，手机在工具栏第二行靠左），并记忆上次选择、支持深链 `?lang=en` / `?lang=ja`。
 名称、简介与全部界面术语（阶段、属性、类型、性格、条件、技能数值、耐性）均本地化；英文与日文名称、简介取自 [digimon.net](https://digimon.net/) 官方图鉴。
 
 
@@ -46,6 +46,10 @@ An offline field guide and evolution-graph explorer for all 475 Digimon in *Digi
 - 悬停高亮「该节点 → 中心」的整条链，弱化无关分支
 - 折叠逐步展开，展开/收起保持当前视角不跳
 - 进化路线查询：任选两只，算出最短进化链与同长度备选路线
+- 瀑布大纲：按世代列出本谱系全部节点（含折叠分支），点条目自动展开路径并居中
+- 鹰眼缩略图：右下角 220×150 全谱系缩略图，白框标中心、青框标当前视口，点击/拖动快速平移
+- 多选：同时选中多只，比较各自的进化路线
+- 左栏可一键收起 / 展开，画布占满；谱系内筛选为浮层，回卡片页自动恢复
 
 **通用 / Common**
 
@@ -56,6 +60,8 @@ An offline field guide and evolution-graph explorer for all 475 Digimon in *Digi
 - 深链：地址栏自动带 `?view=lineage&d=092&q=暴龙`，可直接分享某个谱系
 - 键盘：`/` 聚焦搜索，`← →` 切换相邻编号，`L` 谱系图，`C` 图鉴卡片，`F` 适应窗口，`Esc` 关闭浮层
 - 无障碍：焦点环、`aria-label`、`prefers-reduced-motion` 时关闭动效
+- 移动端：谱系页左栏收起为左下角「› 展开列表」全屏抽屉（475 只可滚动筛选），单指拖动平移、双指缩放；工具栏紧凑排布
+- GitHub 入口：工具栏最右侧「GitHub ↗」按钮（新窗口打开本仓库），卡片页页脚另有文字链接
 
 ## 目录结构 / Layout
 
@@ -89,7 +95,7 @@ python3 -m http.server 8000
 
 ```bash
 python3 scripts/build_single.py
-# 产出 dist/digimon-time-stranger-guide-single.html（图标 base64 内嵌，约 2.2 MB）
+# 产出 dist/digimon-time-stranger-guide-single.html（图标 base64 内嵌，约 2.9 MB）
 ```
 
 单文件版可以拷到 U 盘或直接发给别人，断网、无服务器也能打开。
@@ -104,11 +110,12 @@ python3 scripts/build_single.py
 
 ## 更新说明 / Changelog
 
-### v1.9.2 — 2026-11-21 · 谱系工具栏宽度对齐 + GitHub 入口
+### v1.9.3 — 2026-11-21 · GitHub 入口与谱系工具栏宽度对齐
 
-- **谱系页宽度对齐**：工具栏解除 1400px 容器限制，左右各内缩 12px，与下方谱系画布边缘完全对齐（1500 / 1700 / 1920 宽实测边缘一致）
-- **GitHub 入口**：工具栏最右侧新增 GitHub 图标按钮（新窗口打开仓库），谱系页与卡片页、桌面与手机均常驻可见；卡片页页脚补「GitHub 仓库（源码 / 更新日志 / 问题反馈）」文字链接
-- 版本号同步：标签页标题与页脚均显示 v1.9.2
+- **GitHub 入口**：工具栏最右侧新增文字按钮「GitHub ↗」（新窗口打开本仓库），谱系页与卡片页、桌面与手机均常驻可见；卡片页页脚补「GitHub 仓库（源码 / 更新日志 / 问题反馈）」文字链接
+- **谱系页宽度对齐**：工具栏解除 1400px 容器限制、左右各内缩 12px，与下方谱系画布边缘完全对齐（1500 / 1700 / 1920 宽实测边缘一致）
+- **版本标识**：标签页标题与页脚显示 v1.9.3
+- 沿续 v1.9.1 起的移动端适配（左栏抽屉、触摸拖动、紧凑头部）、多语言 UI 对齐、图例防截断、鹰眼与条件卡防重叠
 
 ## 数据来源 / Data
 
