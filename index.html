@@ -1155,6 +1155,16 @@ body.light .recenter{background:rgba(255,255,255,.94);color:#0d5f86;box-shadow:0
 </style>
 </head>
 <body>
+<script>
+/* v1.9.12 关闭页面即回归默认：每次打开先清空上次保存的状态（筛选/中心/语言/主题/图片模式/面板宽度/谱系开关等） */
+(function(){
+  try{
+    const kill=['ts-theme','dg_state','dg_lang','dg_dw','dg_dview','dg_imgmode','dg_sprite','dg_size','dg_mini','dg_outline'];
+    const ks=[]; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k) ks.push(k); }
+    ks.forEach(k=>{ if(k.indexOf('dg_')===0 || kill.indexOf(k)>=0) localStorage.removeItem(k); });
+  }catch(e){}
+})();
+</script>
 <div class="wrap">
   <section class="hero">
     <div class="tagline">DIGIMON STORY · TIME STRANGER</div>
@@ -1305,7 +1315,7 @@ body.light .recenter{background:rgba(255,255,255,.94);color:#0d5f86;box-shadow:0
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.11 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.12 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -3833,6 +3843,11 @@ document.addEventListener('keydown',e=>{
   try{ if(localStorage.getItem('dg_outline')==='1') setOutline(true); }catch(e){}
   try{ if(localStorage.getItem('dg_mini')==='1') setMini(true); }catch(e){}
 })();
+</script>
+<script>
+/* v1.9.12 地址栏不再自动记录浏览状态（?d/?view/?q/?fs…），关掉再打开一律从默认开始；
+   分享链接仍可携带参数，打开时按链接还原。 */
+try{ if(typeof syncURL==='function') syncURL=function(){}; }catch(e){}
 </script>
 </body>
 </html>
