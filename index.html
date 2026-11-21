@@ -2831,6 +2831,8 @@ function initLang(){
 }
 
 try{ initLang(); }catch(e){ console.error(e); }
+/* 兜底：深链/记忆恢复完成后再按当前搜索+筛选刷新一次左列表，避免先建列表后填搜索导致计数与滚动条不一致 */
+window.addEventListener('load',()=>{ try{ if(typeof LV!=='undefined'&&LV.on&&typeof filterSideList==='function') filterSideList(); }catch(e){} });
 
 /* ---------------- 键盘快捷键 ---------------- */
 document.addEventListener('keydown',e=>{
