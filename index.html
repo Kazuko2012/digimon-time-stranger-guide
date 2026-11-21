@@ -2818,7 +2818,7 @@ window.setLang=function(l){
 };
 function initLang(){
   let l=null;
-  try{ l=new URLSearchParams(location.search).get('lang'); }catch(e){}
+  try{ const us=new URLSearchParams(location.search); l=us.get('lang')||us.get('language'); }catch(e){}
   if(!l){ try{ l=localStorage.getItem(LANG_KEY); }catch(e){} }
   if(l!=='en' && l!=='ja') l='zh';
   const btns=document.querySelectorAll('#langsw button');
