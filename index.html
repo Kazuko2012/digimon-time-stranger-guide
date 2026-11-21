@@ -364,12 +364,12 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:#
 .vtab.on{background:linear-gradient(120deg,rgba(79,216,255,.3),rgba(167,139,250,.3));color:#fff;font-weight:600}
 
 /* ---------- GRAPH ---------- */
-.gwrap{position:relative;height:min(78vh,880px);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:none;
+.gwrap{position:relative;height:min(78vh,880px);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:none;background-color:#070b16;
   background:radial-gradient(900px 600px at 50% 40%,rgba(79,216,255,.08),rgba(7,11,22,.9) 70%)}
 .gwrap.on{display:block}
 /* 谱系图与卡片页共用全部上方内容，只切换下方内容区 */
-body.lvonly .hero,body.lvonly .note{display:block}
-body.lvonly .gwrap{height:100vh;max-height:none;scroll-margin-top:0}
+body.lvonly .hero,body.lvonly .note{display:none}
+body.lvonly .gwrap{position:fixed;left:12px;right:12px;top:calc(var(--tbh,120px) + 8px);bottom:12px;height:auto;max-height:none;scroll-margin-top:0;z-index:30}
 #gcanvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #gcanvas.grabbing{cursor:grabbing}
 .gtools{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:5}
@@ -603,6 +603,9 @@ button:focus-visible,input:focus-visible,.chip:focus-visible,.lsi:focus-visible,
 .lnode .lexp.up{right:auto;left:-13px;height:20px;line-height:17px;min-width:24px;font-size:11px;
   border-color:rgba(255,196,92,.75);background:rgba(12,18,34,.96);color:#ffcf7a;box-shadow:0 2px 8px rgba(0,0,0,.45)}
 .lnode .lexp.up:hover{background:rgba(255,196,92,.32);color:#fff}
+.lexp.up.open{border-color:rgba(79,216,255,.7);background:rgba(12,18,34,.96);color:#9fe8ff}
+.lexp.up.open:hover{background:rgba(79,216,255,.3);color:#fff}
+body.light .lexp.up.open{border-color:rgba(15,131,184,.6);background:#fff;color:#0b4a68}
 body.light .lnode .lexp.up{border-color:rgba(200,140,20,.65);background:#fffdf2;color:#8a5a00}
 body.light .lnode .lexp{border-color:rgba(15,131,184,.45);background:rgba(15,131,184,.12);color:#0d5f86}
 body.light .lnode .lexp.open{border-color:rgba(120,95,210,.45);background:rgba(120,95,210,.12);color:#4a3390}
@@ -733,7 +736,7 @@ body.light footer{color:#6b7a90}
 body.light .viewtabs{background:rgba(20,45,90,.05)}
 body.light .vtab{color:#4a5c78}
 body.light .vtab.on{color:#0b2233}
-body.light .gwrap{background:radial-gradient(900px 600px at 50% 40%,rgba(15,131,184,.10),#f7f9fd 70%)}
+body.light .gwrap{background-color:#f7f9fd;background:radial-gradient(900px 600px at 50% 40%,rgba(15,131,184,.10),#f7f9fd 70%)}
 body.light .gtool{background:#fff;color:#33465f;border-color:rgba(60,90,140,.28)}
 body.light .glegend{background:#fff}
 body.light .glegend div{color:#4a5c78}
@@ -906,6 +909,8 @@ body.light #lsbopen{background:#fff;color:#33465f;border-color:rgba(15,131,184,.
 .sizectl button{width:26px;height:26px;border:0;border-radius:var(--r-sm,8px);background:transparent;color:var(--ctl-txt,#9fb6d8);font-size:14px;line-height:1;cursor:pointer;font-family:inherit;transition:background .15s}
 .sizectl button:hover:not(:disabled){background:var(--ctl-bg-h,rgba(79,216,255,.14))}
 .sizectl button:disabled{opacity:.35;cursor:default}
+.sizectl.off{opacity:.45;pointer-events:none}
+.sizectl.off #szVal{color:var(--sub)}
 .sizectl #szVal{min-width:30px;text-align:center;font-size:12px;color:var(--sub);user-select:none}
 body.light .sizectl{background:#fff;border-color:rgba(15,131,184,.28)}
 body.light .sizectl button{color:#33465f}
@@ -922,6 +927,39 @@ body.light .pcbtn{background:#fff}
 body.light .pform label{background:#fff;color:#33465f;border-color:rgba(15,131,184,.28)}
 body.light .pform label.on{border-color:rgba(15,131,184,.65);background:rgba(15,131,184,.12);color:#0b4a68}
 .pform label input[type="checkbox"]{flex:0 0 auto;min-width:0;width:15px;height:15px;padding:0;border:0;background:transparent;accent-color:#4fd8ff;margin:0}
+
+/* ================= v1.9 瀑布大纲 + 鹰眼缩略图 ================= */
+.loutline{position:absolute;left:12px;top:64px;bottom:12px;width:256px;z-index:28;display:none;flex-direction:column;
+  border:1px solid var(--line);border-radius:12px;background:rgba(9,14,26,.93);backdrop-filter:blur(8px);overflow:hidden}
+.loutline.on{display:flex}
+body:not(.lsc-off) .loutline{left:250px}
+.lo-h{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px;color:#cfe0ff}
+.lo-h em{font-style:normal;color:var(--sub);font-size:11px}
+.lo-h button{margin-left:auto;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:#9fb6d8;cursor:pointer;font-size:12px}
+.lo-h button:hover{background:rgba(79,216,255,.14);color:#fff}
+.lo-body{flex:1;overflow-y:auto;padding:6px;scrollbar-width:thin}
+.lo-st{font-size:11px;font-weight:700;margin:8px 4px 4px;letter-spacing:.03em}
+.lo-st em{font-style:normal;color:var(--sub);font-weight:400;margin-left:6px}
+.lo-item{display:flex;align-items:center;gap:7px;width:100%;padding:5px 8px;border:0;border-radius:8px;background:transparent;
+  color:#dbe8ff;font-size:12px;font-family:inherit;cursor:pointer;text-align:left}
+.lo-item:hover{background:rgba(79,216,255,.12)}
+.lo-item i{width:8px;height:8px;border-radius:50%;flex:none}
+.lo-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lo-item em{margin-left:auto;font-style:normal;color:var(--sub);font-size:10.5px;flex:none}
+.lo-item.fold{opacity:.55}
+.lo-item.cur{background:rgba(79,216,255,.18);font-weight:700}
+body.light .loutline{background:rgba(255,255,255,.96)}
+body.light .lo-h{color:#132139}
+body.light .lo-item{color:#22324a}
+body.light .lo-item.cur{background:rgba(15,131,184,.14)}
+.lmini{position:absolute;right:12px;bottom:12px;z-index:28;display:none;padding:6px;border:1px solid var(--line);border-radius:12px;
+  background:rgba(9,14,26,.9);backdrop-filter:blur(8px)}
+.lmini.on{display:block}
+.lmini canvas{display:block;width:220px;height:150px;cursor:crosshair;border-radius:6px}
+body.light .lmini{background:rgba(255,255,255,.95)}
+.lnode.flash{animation:lflash 1.4s ease}
+@keyframes lflash{0%,55%{box-shadow:0 0 0 3px rgba(79,216,255,.85)}100%{box-shadow:0 0 0 0 rgba(79,216,255,0)}}
+@media (max-width:1100px){#loutline,#lminiBtn{display:none}}
 </style>
 </head>
 <body>
@@ -2225,10 +2263,12 @@ function buildLineage(center, keepView){
     const expd=LV.exp.has(id);
     const canToggle = expd ? (kids[id]||[]).length>0 : (descN[id]>0);
     const badge = canToggle ? `<button class="lexp${expd?' open':''}" data-n="${id}" title="${expd?'收起这一支':'展开下一层'}">${expd?'–':'+'+descN[id]}</button>` : '';
+    const upOpen=LV.expUp.has(id);
+    const upBadge=(upN[id]||upOpen)?`<button class="lexp up${upOpen?' open':''}" data-n="${id}" title="${upOpen?'收起上游进化源':'展开上游进化源（这只从哪里进化来）'}">${upOpen?'–':'↑'+(upN[id]>99?'99+':upN[id])}</button>`:'';
     return `<div class="${cls}" data-n="${id}" tabindex="0" role="button" style="left:${p.x}px;top:${p.y}px;border-color:${isC?'#4fd8ff':sc+'66'};box-shadow:inset 3px 0 0 ${sc}">
       <img width="112" height="112" decoding="async" src="${iconPath(id)}" alt="" onerror="this.style.opacity=.12">
       <div class="lt"><b>${nameOf(d)}</b><span>No.${String(id).padStart(3,'0')} · ${d.s}</span></div>
-      <button class="linfo" data-n="${id}" title="查看完整详情">i</button>${upN[id]?`<button class="lexp up" data-n="${id}" title="展开上游进化源（这只从哪里进化来）">↑${upN[id]>99?'99+':upN[id]}</button>`:''}${badge}
+      <button class="linfo" data-n="${id}" title="查看完整详情">i</button>${upBadge}${badge}
     </div>`;
   }).join('');
 
@@ -2280,8 +2320,8 @@ function buildLineage(center, keepView){
       if(e.target.classList && e.target.classList.contains('up')){
         e.stopPropagation();
         const n=+e.target.dataset.n;
-        (BY[n].v||[]).forEach(p=>{ if(BY[p] && !set.has(p)) LV.extra.add(p); });
-        if(LV.expUp.has(n)) LV.expUp.delete(n); else LV.expUp.add(n);
+        if(LV.expUp.has(n)) LV.expUp.delete(n);
+        else { (BY[n].v||[]).forEach(p=>{ if(BY[p] && !set.has(p)) LV.extra.add(p); }); LV.expUp.add(n); }
         buildLineage(center,true); return;
       }
       if(e.target.classList && e.target.classList.contains('lexp')){
@@ -2554,8 +2594,11 @@ function setMulti(on){
 /* ---------------- 画布高度 / 视图切换 ---------------- */
 function fitWrapHeight(){
   const g=$('#gwrap'); if(!g) return;
-  // 谱系画画布高度＝整屏高度，铺满一屏
-  g.style.height=Math.round(window.innerHeight)+'px';
+  if(document.body.classList.contains('lvonly')){ g.style.height=''; return; }  /* v1.9b 固定布局由 CSS inset 决定 */
+  // v1.9b 画布高度＝整屏减去 sticky 工具栏高度，保证谱系导航栏(lbar)不被工具栏遮住
+  const tb=document.querySelector('.toolbar');
+  const tbh=tb?Math.round(tb.getBoundingClientRect().height):0;
+  g.style.height=Math.max(320,Math.round(window.innerHeight)-tbh-10)+'px';
 }
 let IMGMODE='normal';
 function setImgMode(m,quiet){
@@ -2605,8 +2648,11 @@ function setView(v){
   $('#gwrap').classList.toggle('on',lg);
   document.body.classList.toggle('lvonly',lg);
   LV.on=lg;
+  if(typeof window.__syncSizeCtl==='function') window.__syncSizeCtl();
   if(lg){
     LV.needFit=true;
+    /* v1.9b 谱系视图固定紧凑工具栏（筛选改浮层），避免 sticky 工具栏遮住谱系导航栏 */
+    if(typeof setTbc==='function'){ tbcManual=true; setTbc(true); }
     fitWrapHeight();
     if(!LV.inited){ LV.inited=true; buildSideList(); }
     else if(typeof filterSideList==='function') filterSideList();
@@ -2624,6 +2670,7 @@ function setView(v){
     document.body.classList.remove('lvgate');
     LV.needFit=false;
     $('#gwrap').style.height='';
+    if(typeof setTbc==='function'){ tbcManual=false; syncToolbar(); }
   }
   if(lg){
     alignLineagePanel();
@@ -2634,11 +2681,14 @@ function setView(v){
 }
 /* 谱系面板对齐：让谱系框顶端正好贴住窗口顶部（顶栏收起会改变上方高度，所以分几次校正） */
 function alignLineagePanel(){
+  if(document.body.classList.contains('lvonly')) return;   /* v1.9b 谱系画布固定定位，无需滚动对齐 */
   const fix=()=>{
     const gw=document.getElementById('gwrap');
     if(!gw || !document.body.classList.contains('lvonly')) return;
+    const tb=document.querySelector('.toolbar');
+    const target=tb?Math.round(tb.getBoundingClientRect().bottom)+2:0;
     const top=Math.round(gw.getBoundingClientRect().top);
-    if(Math.abs(top)>6) window.scrollBy(0,top);
+    if(Math.abs(top-target)>6) window.scrollBy(0,top-target);
   };
   requestAnimationFrame(fix);
   setTimeout(fix,120); setTimeout(fix,320);
@@ -2884,6 +2934,16 @@ UI_LANG.en['‹ 收起列表']='‹ Collapse list'; UI_LANG.en['› 展开列表
 UI_LANG.ja['‹ 收起列表']='‹ リストを畳む'; UI_LANG.ja['› 展开列表']='› リストを開く';
 UI_LANG.en['收起左侧列表，画布占满']='Collapse the left list so the canvas fills the width';
 UI_LANG.ja['收起左侧列表，画布占满']='左リストを畳んでキャンバスを全幅に';
+UI_LANG.en['收起上游进化源']='Collapse upstream sources';
+UI_LANG.ja['收起上游进化源']='上游の進化元を畳む';
+UI_LANG.en['瀑布大纲']='Waterfall outline'; UI_LANG.ja['瀑布大纲']='瀑布アウトライン';
+UI_LANG.en['鹰眼']='Minimap'; UI_LANG.ja['鹰眼']='ミニマップ';
+UI_LANG.en['按世代列出本谱系全部节点（含折叠分支），点击定位']='List every node of this lineage by stage (incl. collapsed); click to locate';
+UI_LANG.ja['按世代列出本谱系全部节点（含折叠分支），点击定位']='世代別に全ノードを一覧（折叠含む）、クリックで移動';
+UI_LANG.en['整棵谱系缩略图 + 当前视口，点击/拖动快速平移']='Overview of the whole tree + viewport; click/drag to pan';
+UI_LANG.ja['整棵谱系缩略图 + 当前视口，点击/拖动快速平移']='全体俯瞰＋現在ビューポート、クリック/ドラッグで移動';
+UI_LANG.en['卡片大小仅作用于图鉴卡片页']='Card size applies to the card view only';
+UI_LANG.ja['卡片大小仅作用于图鉴卡片页']='カードサイズは図鑑カード頁のみ有効';
 UI_LANG.en['展开左侧列表']='Expand the left list';
 UI_LANG.ja['展开左侧列表']='左リストを開く';
 UI_LANG.en['有等级数值']='Levels shown'; UI_LANG.ja['有等级数值']='レベル値あり';
@@ -3275,8 +3335,11 @@ document.addEventListener('keydown',e=>{
     bs.setProperty('--gg',(gw>=320?16:12)+'px');
     const v=document.getElementById('szVal'); if(v) v.textContent=LABELS[SZIDX];
     const mi=document.getElementById('szMinus'), pl=document.getElementById('szPlus');
-    if(mi) mi.disabled=(SZIDX===0);
-    if(pl) pl.disabled=(SZIDX===SIZES.length-1);
+    const lvOn=(typeof LV!=='undefined'&&LV.on);
+    if(mi) mi.disabled=lvOn||SZIDX===0;
+    if(pl) pl.disabled=lvOn||SZIDX===SIZES.length-1;
+    const sc=document.getElementById('sizectl');
+    if(sc){ sc.classList.toggle('off',!!lvOn); sc.title=lvOn?'卡片大小仅作用于图鉴卡片页':'调整图鉴卡片宽度（− / ＋）'; }
     try{ localStorage.setItem('dg_size',String(gw)); }catch(e){}
     if(!quiet){
       if(typeof setNodeMetrics==='function') setNodeMetrics();
@@ -3285,6 +3348,7 @@ document.addEventListener('keydown',e=>{
     }
   }
   window.__applySize=applySize; window.__SIZES=SIZES;
+  window.__syncSizeCtl=()=>applySize(SZIDX,true);
   const mi=document.getElementById('szMinus'), pl=document.getElementById('szPlus');
   if(mi) mi.onclick=()=>applySize(SZIDX-1);
   if(pl) pl.onclick=()=>applySize(SZIDX+1);
@@ -3310,6 +3374,7 @@ document.addEventListener('keydown',e=>{
     else { const l=parseInt(localStorage.getItem('dg_size')||'',10); if(l && SIZES.includes(l)) px=l; }
   }catch(e){}
   applySize(SIZES.indexOf(px),true);
+  window.__syncSizeCtl();
 })();
 
 /* ================= v1.8 谱系左栏一键收起 / 展开 ================= */
@@ -3327,6 +3392,123 @@ document.addEventListener('keydown',e=>{
   ob.onclick=()=>set(false);
   try{ if(localStorage.getItem(KEY)==='1') document.body.classList.add('lsc-off'); }catch(e){}
   sync();
+})();
+
+/* ================= v1.9b 工具栏高度变化时重排谱系画布 ================= */
+(function(){
+  const tb=document.querySelector('.toolbar'); if(!tb||!window.ResizeObserver) return;
+  let raf=0;
+  const setH=()=>{ document.documentElement.style.setProperty('--tbh', Math.round(tb.getBoundingClientRect().height)+'px'); if(window.__miniDraw) window.__miniDraw(); };
+  new ResizeObserver(()=>{
+    if(raf) return;
+    raf=requestAnimationFrame(()=>{ raf=0; setH(); });
+  }).observe(tb);
+  window.addEventListener('resize',setH);
+  setH();
+})();
+/* ================= v1.9 瀑布大纲 + 鹰眼缩略图 ================= */
+(function(){
+  const gw=document.getElementById('gwrap'), lfit=document.getElementById('lfit');
+  if(!gw||!lfit||typeof LV==='undefined') return;
+  const lvp=document.getElementById('lviewport');
+  /* ---- 工具栏按钮 ---- */
+  const bO=document.createElement('button'); bO.className='gtool'; bO.id='loutline'; bO.type='button'; bO.textContent='瀑布大纲'; bO.title='按世代列出本谱系全部节点（含折叠分支），点击定位';
+  const bM=document.createElement('button'); bM.className='gtool'; bM.id='lminiBtn'; bM.type='button'; bM.textContent='鹰眼'; bM.title='整棵谱系缩略图 + 当前视口，点击/拖动快速平移';
+  lfit.parentElement.insertBefore(bO,lfit); lfit.parentElement.insertBefore(bM,lfit);
+  /* ---- 瀑布大纲面板 ---- */
+  const panel=document.createElement('div'); panel.className='loutline'; panel.id='loutlinePanel';
+  panel.innerHTML='<div class="lo-h">瀑布大纲 <em id="loCount"></em><button id="loClose" type="button" aria-label="关闭大纲">✕</button></div><div class="lo-body" id="loBody"></div>';
+  gw.appendChild(panel);
+  /* ---- 鹰眼 ---- */
+  const mini=document.createElement('div'); mini.className='lmini'; mini.id='lmini';
+  mini.innerHTML='<canvas id="lminiCv" width="220" height="150" aria-label="谱系缩略图"></canvas>';
+  gw.appendChild(mini);
+  const cv=mini.querySelector('canvas'); const ctx=cv.getContext('2d');
+  let miniMap=null, outlineOn=false, miniOn=false;
+  /* ---- 定位 ---- */
+  function expandPath(id){
+    const univ=new Set(LV.__allNodes||[LV.center]); if(!univ.has(id)) return;
+    const prev={}; prev[LV.center]=-1; const q=[LV.center];
+    while(q.length){ const c=q.shift(); if(c===id) break; const nd=BY[c]; if(!nd) continue;
+      for(const t of [...(nd.x||[]),...(nd.v||[])]){ if(univ.has(t)&&prev[t]===undefined){ prev[t]=c; q.push(t); } } }
+    if(prev[id]===undefined) return;
+    let cur=id;
+    while(prev[cur]!==-1&&prev[cur]!==undefined){ const u=prev[cur];
+      if((BY[u].x||[]).includes(cur)) LV.exp.add(u); else LV.expUp.add(u);
+      cur=u; }
+  }
+  function locate(id){
+    if(!LV.pos||!LV.pos[id]){ expandPath(id); buildLineage(LV.center,true); }
+    const p=LV.pos&&LV.pos[id]; if(!p) return;
+    const w=lvp.clientWidth||1,h=lvp.clientHeight||1;
+    LV.tx=w/2-(p.x+CW/2)*LV.scale; LV.ty=h/2-(p.y+CH/2)*LV.scale;
+    applyTransform();
+    const el=document.querySelector('#lnodes .lnode[data-n="'+id+'"]')||document.querySelector('.lnode[data-n="'+id+'"]');
+    if(el){ el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1500); }
+  }
+  window.__lvLocate=locate;
+  /* ---- 大纲渲染 ---- */
+  function refreshOutline(){
+    if(!outlineOn) return;
+    const body=panel.querySelector('#loBody'); const all=LV.__allNodes||[];
+    panel.querySelector('#loCount').textContent=all.length+' 只';
+    const groups={}; all.forEach(id=>{ const d=BY[id]; if(!d) return; (groups[d.s]=groups[d.s]||[]).push(id); });
+    let h='';
+    GSTAGES.forEach(st=>{ const list=groups[st]; if(!list||!list.length) return;
+      list.sort((a,b)=>a-b);
+      h+='<div class="lo-st" style="color:'+(stageColor[st]||'#8fa4c9')+'">'+st+'<em>'+list.length+'</em></div>';
+      list.forEach(id=>{ const rendered=!!(LV.pos&&LV.pos[id]);
+        h+='<button type="button" class="lo-item'+(rendered?'':' fold')+(id===LV.center?' cur':'')+'" data-n="'+id+'"><i style="background:'+(stageColor[st]||'#8fa4c9')+'"></i><span>'+escTxt(nameOf(BY[id]))+'</span><em>No.'+String(id).padStart(3,'0')+'</em></button>'; });
+    });
+    body.innerHTML=h;
+    body.querySelectorAll('.lo-item').forEach(el=>el.onclick=()=>{ locate(+el.dataset.n); refreshOutline(); });
+  }
+  window.__refreshOutline=refreshOutline;
+  /* ---- 鹰眼绘制 ---- */
+  function miniDraw(){
+    if(!miniOn||!LV.pos) return;
+    const ids=Object.keys(LV.pos).map(Number); if(!ids.length) return;
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    ids.forEach(i=>{const p=LV.pos[i]; x0=Math.min(x0,p.x); y0=Math.min(y0,p.y); x1=Math.max(x1,p.x+CW); y1=Math.max(y1,p.y+CH);});
+    const pad=8, sw=cv.width-pad*2, sh=cv.height-pad*2;
+    const k=Math.min(sw/Math.max(1,x1-x0), sh/Math.max(1,y1-y0));
+    miniMap={x0,y0,k,pad};
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ids.forEach(i=>{ const p=LV.pos[i]; ctx.fillStyle=stageColor[BY[i].s]||'#8fa4c9';
+      ctx.fillRect(pad+(p.x-x0)*k, pad+(p.y-y0)*k, Math.max(2,CW*k), Math.max(1.5,CH*k)); });
+    const cp=LV.pos[LV.center];
+    if(cp){ ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=1;
+      ctx.strokeRect(pad+(cp.x-x0)*k-.5, pad+(cp.y-y0)*k-.5, Math.max(2,CW*k)+1, Math.max(1.5,CH*k)+1); }
+    const w=lvp.clientWidth||1,h=lvp.clientHeight||1;
+    const wx0=(0-LV.tx)/LV.scale, wy0=(0-LV.ty)/LV.scale, wx1=(w-LV.tx)/LV.scale, wy1=(h-LV.ty)/LV.scale;
+    ctx.strokeStyle='rgba(79,216,255,.95)'; ctx.lineWidth=1.2;
+    ctx.strokeRect(pad+(wx0-x0)*k, pad+(wy0-y0)*k, (wx1-wx0)*k, (wy1-wy0)*k);
+  }
+  window.__miniDraw=miniDraw;
+  function miniJump(e){
+    if(!miniMap) return;
+    const r=cv.getBoundingClientRect();
+    const cx=(e.clientX-r.left)*(cv.width/r.width), cy=(e.clientY-r.top)*(cv.height/r.height);
+    const wx=miniMap.x0+(cx-miniMap.pad)/miniMap.k, wy=miniMap.y0+(cy-miniMap.pad)/miniMap.k;
+    const w=lvp.clientWidth||1,h=lvp.clientHeight||1;
+    LV.tx=w/2-wx*LV.scale; LV.ty=h/2-wy*LV.scale; applyTransform();
+  }
+  cv.addEventListener('pointerdown',e=>{ try{cv.setPointerCapture(e.pointerId);}catch(err){} miniJump(e); });
+  cv.addEventListener('pointermove',e=>{ if(e.buttons) miniJump(e); });
+  /* ---- 开关 ---- */
+  function setOutline(on){ outlineOn=on; panel.classList.toggle('on',on); bO.classList.toggle('on',on);
+    try{localStorage.setItem('dg_outline',on?'1':'0');}catch(e){} if(on) refreshOutline(); }
+  function setMini(on){ miniOn=on; mini.classList.toggle('on',on); bM.classList.toggle('on',on);
+    try{localStorage.setItem('dg_mini',on?'1':'0');}catch(e){} if(on) miniDraw(); }
+  bO.onclick=()=>setOutline(!outlineOn);
+  bM.onclick=()=>setMini(!miniOn);
+  panel.querySelector('#loClose').onclick=()=>setOutline(false);
+  /* ---- 钩子：变换/重建后刷新 ---- */
+  const _at=applyTransform; applyTransform=function(){ _at(); miniDraw(); };
+  const _bl=buildLineage; buildLineage=function(c,k){ _bl(c,k); refreshOutline(); miniDraw(); };
+  addEventListener('resize',()=>{ miniDraw(); });
+  try{ if(localStorage.getItem('dg_outline')==='1') setOutline(true); }catch(e){}
+  try{ if(localStorage.getItem('dg_mini')==='1') setMini(true); }catch(e){}
 })();
 </script>
 </body>
