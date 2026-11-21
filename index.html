@@ -518,6 +518,8 @@ body.light .lghint b{color:#123a6b}
   border-right:1px solid var(--line);background:rgba(9,14,26,.74);backdrop-filter:blur(8px);z-index:4}
 .lside .lsq{padding:7px 8px;border-bottom:1px solid var(--line);flex:none;display:flex;align-items:center;gap:6px}
 .lsicount{flex:none;font-size:10.5px;color:var(--sub);min-width:26px;text-align:right}
+.lsl.filtered::-webkit-scrollbar-thumb{background:rgba(64,200,160,.55)}
+body.light .lsl.filtered::-webkit-scrollbar-thumb{background:rgba(10,150,110,.45)}
 .lside .lsq input{width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--line);
   background:rgba(255,255,255,.06);color:#fff;font-size:12px;font-family:inherit;outline:none}
 .lside .lsq input:focus{border-color:var(--cyan)}
@@ -1847,7 +1849,12 @@ function filterSideList(){
     if(show) shown++;
   });
   const cnt=document.getElementById('lsicount');
-  if(cnt) cnt.textContent=shown;
+  const fOn=(FS.size||FA.size||FC.size);
+  const total=(typeof nodes!=='undefined'&&nodes.length)?nodes.length:(lsideList.querySelectorAll('.lsi').length);
+  if(cnt){ cnt.textContent=fOn?(shown+'/'+total):String(shown); cnt.title='当前列表计数'+(fOn?'（已筛选）':''); }
+  lsideList.classList.toggle('filtered',!!fOn);                  // 筛选生效时滚动条变色
+  const sig=[...FS].sort().join(',')+'|'+[...FA].sort().join(',')+'|'+[...FC].sort().join(',')+'|'+raw;
+  if(sig!==filterSideList.__sig){ filterSideList.__sig=sig; lsideList.scrollTop=0; }  // 筛选变化即回到顶部，滚动范围随内容重算
   const act=lsideList.querySelector('.lsi.on');
   if(act && act.style.display==='none') lsideList.scrollTop=0;   // 当前中心被筛掉时回到顶部
   return shown;
