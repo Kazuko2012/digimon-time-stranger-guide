@@ -2538,6 +2538,25 @@ lvp.addEventListener('wheel',e=>{
   LV.scale=ns; applyTransform();
 },{passive:false});
 
+/* 左侧数码兽列表：自己接滚轮，保证在搜索框、空白处、条目上滚都能滚列表（不被页面/画布抢走） */
+function nudgeScroll(el,e){
+  if(!el) return;
+  let dy=e.deltaY; if(e.deltaMode===1) dy*=16; else if(e.deltaMode===2) dy*=el.clientHeight;
+  e.preventDefault();
+  el.scrollTop += dy;
+}
+(function(){
+  const side=document.querySelector('.lside');
+  if(!side) return;
+  side.addEventListener('wheel',e=>{
+    if(typeof LV==='undefined' || !LV.on) return;
+    const lsl=document.querySelector('.lsl');
+    if(!lsl) return;
+    if(lsl.scrollHeight<=lsl.clientHeight+1) return;   /* 列表没得滚就交回默认 */
+    nudgeScroll(lsl,e);
+  },{passive:false});
+})();
+
 const lsearch=$('#lsearch'), lsug=$('#lsug');
 function suggest(){
   const k=lsearch.value.trim().toLowerCase().replace(/^no\.?\s*/i,'').replace(/^#/,'');
