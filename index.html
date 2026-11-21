@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>数码宝贝物语 时空异客 · 全进化关系图鉴 v1.9.1</title>
+<title>数码宝贝物语 时空异客 · 全进化关系图鉴 v1.9.2</title>
 <style>
 :root{
   /* == design tokens (UI unification v1.6) == */
@@ -106,6 +106,13 @@ body.light.tbc .toolbar.showf .filters{background:#fbfdff;
 .chip:hover{border-color:rgba(79,216,255,.5);color:#fff}
 .chip.on{background:linear-gradient(120deg,rgba(79,216,255,.28),rgba(167,139,250,.28));border-color:rgba(79,216,255,.6);color:#fff}
 .count{margin-left:auto;font-size:12.5px;color:var(--sub)}
+/* GitHub 入口 */
+.ghbtn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;flex:none;
+  border-radius:10px;border:1px solid rgba(120,170,255,.32);background:rgba(255,255,255,.05);color:#c9d8ef;
+  transition:border-color .18s,color .18s,box-shadow .18s,background .18s}
+.ghbtn:hover{border-color:var(--cyan);color:#fff;background:rgba(79,216,255,.12);box-shadow:0 0 14px rgba(79,216,255,.22)}
+body.light .ghbtn{background:#fff;border-color:rgba(15,131,184,.28);color:#3a4d68}
+body.light .ghbtn:hover{border-color:var(--cyan);color:#0d2a44}
 .count b{color:var(--cyan)}
 
 /* ---------- GRID ---------- */
@@ -370,6 +377,8 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:#
 /* 谱系图与卡片页共用全部上方内容，只切换下方内容区 */
 body.lvonly .hero,body.lvonly .note{display:none}
 body.lvonly footer{display:none}
+/* 谱系页：工具栏左右边距与下方画布对齐（画布 12px 内缩） */
+body.lvonly .wrap{max-width:none;padding:0 12px}
 body.lvonly .gwrap{position:fixed;left:12px;right:12px;top:calc(var(--tbh,120px) + 8px);bottom:12px;height:auto;max-height:none;scroll-margin-top:0;z-index:30}
 #gcanvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #gcanvas.grabbing{cursor:grabbing}
@@ -981,7 +990,8 @@ body.light .lmini{background:rgba(255,255,255,.95)}
   .llegend{display:none}
   .lbar .gtool{flex:none;padding:7px 10px;font-size:12px}
   .tb-right{flex-wrap:wrap;margin-left:0;justify-content:flex-start;width:100%}
-  .tb-right .count{font-size:11.5px;flex:1 1 100%;text-align:left;margin:0}
+  .tb-right .count{font-size:11.5px;flex:1 1 auto;text-align:left;margin:0}
+  .ghbtn{width:30px;height:30px;border-radius:8px}
   body.lvonly .gwrap{left:0;right:0;bottom:0;border-radius:0;border-left:0;border-right:0}
   /* 竖屏紧凑工具栏：压缩控件内边距与字阶，隐藏精灵图开关 */
   .toolbar{padding:6px 0 6px;margin:0 0 6px}
@@ -1008,6 +1018,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
   .lstats{flex:1 1 100%;font-size:11px}
   .lbar .gtool{padding:6px 8px;font-size:11.5px}
   body.lvonly .count{display:none}
+  body.lvonly .wrap{padding:0}
   /* 移动端：列表改为全屏抽屉，提供重新打开入口 */
   #lsbopen{display:inline-flex!important;position:fixed;left:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:32}
   body.lvgate #lsbopen{display:none!important}
@@ -1058,6 +1069,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
         <button class="btn fbtn" id="fbToggle" aria-expanded="true" aria-controls="filtersBox" title="手动显示 / 隐藏筛选卡片（阶段、属性、条件）">收起筛选</button>
         <button class="btn theme-btn" id="themeBtn" title="切换白天 / 夜间模式">☀ 白天模式</button>
         <div class="count">当前显示 <b id="c-show">475</b> / 475</div>
+        <a class="ghbtn" id="ghLink" href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" aria-label="在 GitHub 上查看源码与更新记录" title="GitHub 仓库：源码 / 更新日志 / 问题反馈"><svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07-.55-.21-.55-.59 0-.35.01-.72.01-1.1 0-1.54-.65-2.66-.65-2.66s.54-.67.83-1.83c-.07-.67-.18-1.11-.18-1.11s-.94-.21-1.69.62c-.09.22-.33.61-.49.85-.36.61-.85.65-1.39.63-1.05-.32-1.12-1.06-1.12-1.06s-.65-.9-1.23-1.13c-.04.08-.23.63-.13 1.11 0 0 .3 1.16.85 1.85 0 0-.62 1.07-.62 1.85 0 .33.01.67.02.75 0 0-.03.29-.03.57 0 .55-.04 1.08-.36 1.16C3.42 11.94 0 9.06 0 8c0-4.42 3.58-8 8-8z"/></svg></a>
       </div>
     </div>
     <div class="filters" id="filtersBox">
@@ -1161,7 +1173,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.1 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 图例与面板防重叠</span>
+  <span id="buildver" style="opacity:.75">v1.9.2 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
