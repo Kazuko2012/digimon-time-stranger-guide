@@ -522,6 +522,11 @@ body.light .lghint b{color:#123a6b}
   background:rgba(255,255,255,.06);color:#fff;font-size:12px;font-family:inherit;outline:none}
 .lside .lsq input:focus{border-color:var(--cyan)}
 .lsl{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:6px;scrollbar-width:thin;overscroll-behavior:contain}
+.lsl::-webkit-scrollbar{width:8px}
+.lsl::-webkit-scrollbar-thumb{background:rgba(120,170,255,.28);border-radius:4px}
+.lsl::-webkit-scrollbar-thumb:hover{background:rgba(120,170,255,.5)}
+.lsl::-webkit-scrollbar-track{background:transparent}
+body.light .lsl::-webkit-scrollbar-thumb{background:rgba(15,131,184,.25)}
 .lsi{display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:8px;cursor:pointer;
   font-size:12px;color:#c6d6f2;border:1px solid transparent;line-height:1.2;content-visibility:auto;contain-intrinsic-size:auto 38px}
 .lsi:hover{background:rgba(79,216,255,.12)}
@@ -2507,7 +2512,9 @@ lvp.addEventListener('pointerup',()=>{ lDrag=null; lvp.classList.remove('grabbin
 lvp.addEventListener('pointerleave',()=>{ lDrag=null; lvp.classList.remove('grabbing'); });
 addEventListener('wheel',e=>{
   if(!LV.on || !document.body.classList.contains('lvonly')) return;
-  if(e.target.closest('.lside') || e.target.closest('.lroute') || e.target.closest('.lsearchwrap')) return;
+  /* 这些区域自己有滚动/交互，放行原生滚轮：左侧列表、路线卡、搜索框、详情抽屉、路线弹窗、抽屉工具条 */
+  if(e.target.closest('.lside') || e.target.closest('.lroute') || e.target.closest('.lsearchwrap')
+     || e.target.closest('.drawer') || e.target.closest('.pmodal') || e.target.closest('.dview') || e.target.closest('.dhnd')) return;
   if(e.target.closest('#lviewport')) return;   /* 画布内交给缩放处理 */
   e.preventDefault();                          /* 其余区域：不滚动页面，面板留在原位 */
 },{passive:false, capture:true});
@@ -2545,17 +2552,18 @@ function nudgeScroll(el,e){
   e.preventDefault();
   el.scrollTop += dy;
 }
-(function(){
-  const side=document.querySelector('.lside');
-  if(!side) return;
-  side.addEventListener('wheel',e=>{
-    if(typeof LV==='undefined' || !LV.on) return;
-    const lsl=document.querySelector('.lsl');
-    if(!lsl) return;
-    if(lsl.scrollHeight<=lsl.clientHeight+1) return;   /* 列表没得滚就交回默认 */
-    nudgeScroll(lsl,e);
-  },{passive:false});
-})();
+/* 按坐标判断：只要指针落在左侧卡片范围内（条目、搜索框、圆角、滚动条、边缘空白都算），
+   就把滚轮交给列表，避免因为事件目标是别的元素而滚不动 */
+addEventListener('wheel',e=>{
+  if(typeof LV==='undefined' || !LV.on) return;
+  const side=document.querySelector('.lside'); if(!side) return;
+  const r=side.getBoundingClientRect();
+  if(!r.width || !r.height) return;
+  if(e.clientX<r.left-8 || e.clientX>r.right+8 || e.clientY<r.top-8 || e.clientY>r.bottom+8) return;
+  const lsl=document.querySelector('.lsl'); if(!lsl) return;
+  if(lsl.scrollHeight<=lsl.clientHeight+1) return;     /* 真没得滚，交回默认 */
+  nudgeScroll(lsl,e);
+},{passive:false,capture:true});
 
 const lsearch=$('#lsearch'), lsug=$('#lsug');
 function suggest(){
