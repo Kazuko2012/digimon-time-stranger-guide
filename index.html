@@ -886,6 +886,42 @@ body.light .dview button.on{background:rgba(15,131,184,.12);color:#0b4a68}
 .kbdhelp{z-index:var(--z-modal)}
 /* 字阶去半像素（控件文本） */
 .vtab,.langsw button,.dview button,.chip,.sug{font-size:var(--fs-2)}
+
+/* v1.7.1 修复：允许退化复选框被 .pform input 的 flex/min-width/字段样式拉伸，导致勾选框与文字分离错位 */
+.pform label{flex:0 0 auto}
+.pform label input[type="checkbox"]{flex:0 0 auto;min-width:0;width:16px;height:16px;padding:0;border:0;background:transparent;accent-color:#4fd8ff;margin:0}
+
+.lsb{flex:none;display:flex;padding:4px 6px;border-top:1px solid var(--line)}
+.lsb button{height:24px;padding:0 10px;border-radius:var(--r-sm,8px);border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(255,255,255,.05));color:var(--ctl-txt,#cfe0ff);font-size:11px;font-family:inherit;cursor:pointer;transition:background .15s}
+.lsb button:hover{background:var(--ctl-bg-h,rgba(79,216,255,.14))}
+body.light .lsb button{background:#fff;color:#33465f;border-color:rgba(15,131,184,.28)}
+#lsbopen{display:none;position:absolute;left:12px;bottom:12px;z-index:27;align-items:center;gap:6px;height:30px;padding:0 13px;
+  border-radius:var(--r-md,10px);border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(10,16,32,.82));
+  color:var(--ctl-txt,#cfe0ff);font-size:12px;font-family:inherit;cursor:pointer;backdrop-filter:blur(6px)}
+#lsbopen:hover{background:var(--ctl-bg-h,rgba(79,216,255,.14))}
+body.light #lsbopen{background:#fff;color:#33465f;border-color:rgba(15,131,184,.28)}
+@media (min-width:881px){ body.lsc-off .lside{display:none} body.lsc-off .lviewport{inset:52px 0 0 0} body.lsc-off #lsbopen{display:inline-flex} }
+@media (max-width:880px){ .lsb,#lsbopen{display:none!important} }
+.sizectl{display:flex;gap:3px;padding:3px;border-radius:var(--r-md,10px);border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(255,255,255,.04));flex:none;align-items:center}
+.sizectl button{width:26px;height:26px;border:0;border-radius:var(--r-sm,8px);background:transparent;color:var(--ctl-txt,#9fb6d8);font-size:14px;line-height:1;cursor:pointer;font-family:inherit;transition:background .15s}
+.sizectl button:hover:not(:disabled){background:var(--ctl-bg-h,rgba(79,216,255,.14))}
+.sizectl button:disabled{opacity:.35;cursor:default}
+.sizectl #szVal{min-width:30px;text-align:center;font-size:12px;color:var(--sub);user-select:none}
+body.light .sizectl{background:#fff;border-color:rgba(15,131,184,.28)}
+body.light .sizectl button{color:#33465f}
+/* v1.7.2 路线面板观感：① 修复 v1.6 字段统一覆盖掉 .pcombo 的右内边距导致占位文字压到下拉开关下；
+   ② 「允许退化」改为与筛选 chip 同族的胶囊开关，不再孤零零 */
+.pcombo input{padding-right:40px}
+.pcbtn{background:var(--ctl-bg,rgba(255,255,255,.06))}
+body.light .pcbtn{background:#fff}
+.pform label{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:var(--h-ctl,32px);padding:0 13px;
+  border-radius:var(--r-pill,999px);border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(255,255,255,.05));
+  color:var(--ctl-txt,#cfe0ff);font-size:12px;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.pform label:hover{background:var(--ctl-bg-h,rgba(79,216,255,.14))}
+.pform label.on{border-color:rgba(79,216,255,.7);background:rgba(79,216,255,.16);color:#eaf9ff}
+body.light .pform label{background:#fff;color:#33465f;border-color:rgba(15,131,184,.28)}
+body.light .pform label.on{border-color:rgba(15,131,184,.65);background:rgba(15,131,184,.12);color:#0b4a68}
+.pform label input[type="checkbox"]{flex:0 0 auto;min-width:0;width:15px;height:15px;padding:0;border:0;background:transparent;accent-color:#4fd8ff;margin:0}
 </style>
 </head>
 <body>
@@ -916,8 +952,9 @@ body.light .dview button.on{background:rgba(15,131,184,.12);color:#0b4a68}
         <button class="vtab" data-view="lineage">谱系图</button>
       </div>
       <div class="imgmode" id="imgmode" title="图鉴卡片 / 谱系图 的图片显示方式">
-        <button data-m="normal">标准</button><button data-m="big">大图</button><button data-m="none">无图</button>
+        <button data-m="normal">标准</button><button data-m="none">无图</button>
       </div>
+      <div class="sizectl" id="sizectl" role="group" aria-label="卡片大小" title="调整图鉴卡片宽度（− / ＋）"><button id="szMinus" type="button" aria-label="缩小卡片">−</button><span id="szVal" aria-live="polite">M</span><button id="szPlus" type="button" aria-label="放大卡片">＋</button></div>
       <div class="imgmode" id="sprmode" title="单图：按需逐张加载；精灵图：一张大图切片，一次请求">
         <button data-m="file">单图</button><button data-m="sprite">精灵图</button>
       </div>
@@ -957,7 +994,9 @@ body.light .dview button.on{background:rgba(15,131,184,.12);color:#0b4a68}
     <div class="lside" id="lside">
       <div class="lsq"><input id="lsideSearch" aria-label="筛选左侧数码兽列表" placeholder="搜索编号 / 中文名 / 日文名" autocomplete="off"><button class="qclear" id="lsclear" type="button" aria-label="清空列表搜索" title="清空列表搜索">✕</button><span class="lsicount" id="lsicount" title="当前列表条数">475</span></div>
       <div class="lsl" id="lsidelist"></div>
+      <div class="lsb"><button id="lsbtgl" type="button" aria-expanded="true" title="收起左侧列表，画布占满">‹ 收起列表</button></div>
     </div>
+    <button id="lsbopen" type="button" aria-expanded="false" title="展开左侧列表">› 展开列表</button>
     <div class="lviewport" id="lviewport">
       <div class="lghint" id="lghint"><b>选一只数码兽开始</b><span>从左侧列表点选任意一只，即可展开它的完整谱系（全部祖先与后代）</span></div>
       <div class="lstage" id="lstage">
@@ -2520,6 +2559,7 @@ function fitWrapHeight(){
 }
 let IMGMODE='normal';
 function setImgMode(m,quiet){
+  if(m==='big') m='normal';   // v1.8 大图模式并入卡片大小步进器
   IMGMODE=m;
   document.body.classList.remove('img-big','img-none');
   if(m==='big') document.body.classList.add('img-big');
@@ -2553,7 +2593,8 @@ document.querySelectorAll('#imgmode button').forEach(b=>b.onclick=()=>{
 (function(){
   let m='normal';
   try{ m=localStorage.getItem('dg_imgmode')||'normal'; }catch(e){}
-  if(!['normal','big','none'].includes(m)) m='normal';
+  if(m==='big'){ m='normal'; try{localStorage.setItem('dg_size','296');}catch(e){} }
+  if(!['normal','none'].includes(m)) m='normal';
   setImgMode(m,true);
 })();
 function setView(v){
@@ -2839,6 +2880,12 @@ const LANG_KEY='dg_lang';
 let LANG='zh';
 let CURDRAW=0;
 const __zhText=new WeakMap(), __zhAttr=new WeakMap();
+UI_LANG.en['‹ 收起列表']='‹ Collapse list'; UI_LANG.en['› 展开列表']='› Expand list';
+UI_LANG.ja['‹ 收起列表']='‹ リストを畳む'; UI_LANG.ja['› 展开列表']='› リストを開く';
+UI_LANG.en['收起左侧列表，画布占满']='Collapse the left list so the canvas fills the width';
+UI_LANG.ja['收起左侧列表，画布占满']='左リストを畳んでキャンバスを全幅に';
+UI_LANG.en['展开左侧列表']='Expand the left list';
+UI_LANG.ja['展开左侧列表']='左リストを開く';
 UI_LANG.en['有等级数值']='Levels shown'; UI_LANG.ja['有等级数值']='レベル値あり';
 UI_LANG.en['上一个中心']='Previous center'; UI_LANG.ja['上一个中心']='前のセンター';
 UI_LANG.en['下一个中心']='Next center'; UI_LANG.ja['下一个中心']='次のセンター';
@@ -3147,6 +3194,9 @@ document.addEventListener('keydown',e=>{
 
 /* ================= v1.7 操作逻辑闭环 ================= */
 (function(){
+  /* 允许退化胶囊开关状态 */
+  (function(){const u=document.getElementById('undir'); if(!u) return; const lab=u.closest('label'); if(!lab) return;
+    const sy=()=>lab.classList.toggle('on',u.checked); u.addEventListener('change',sy); sy();})();
   /* 读屏反馈 */
   ['#c-show','#copytoast','#lsicount'].forEach(sel=>{const e=document.querySelector(sel); if(e) e.setAttribute('aria-live','polite');});
   /* 左栏联想键盘导航 */
@@ -3210,6 +3260,73 @@ document.addEventListener('keydown',e=>{
     const thm=usp.get('thm');
     if(thm==='light' && !document.body.classList.contains('light')){ const tb=document.getElementById('themeBtn'); if(tb) tb.click(); }
   }catch(e){}
+})();
+
+/* ================= v1.8 密度两段 + 卡片大小步进器 ================= */
+(function(){
+  const SIZES=[168,196,240,296,360], LABELS=['XS','S','M','L','XL'];
+  let SZIDX=1;
+  function applySize(i,quiet){
+    SZIDX=Math.max(0,Math.min(SIZES.length-1,i));
+    const gw=SIZES[SZIDX];
+    const bs=document.body.style;
+    bs.setProperty('--gw',gw+'px');
+    bs.setProperty('--picw',Math.max(44,Math.min(96,Math.round(gw*0.3)))+'px');
+    bs.setProperty('--gg',(gw>=320?16:12)+'px');
+    const v=document.getElementById('szVal'); if(v) v.textContent=LABELS[SZIDX];
+    const mi=document.getElementById('szMinus'), pl=document.getElementById('szPlus');
+    if(mi) mi.disabled=(SZIDX===0);
+    if(pl) pl.disabled=(SZIDX===SIZES.length-1);
+    try{ localStorage.setItem('dg_size',String(gw)); }catch(e){}
+    if(!quiet){
+      if(typeof setNodeMetrics==='function') setNodeMetrics();
+      if(typeof LV!=='undefined' && LV.inited && !LV.pending && typeof buildLineage==='function') buildLineage(LV.center);
+      if(typeof syncURL==='function') syncURL();
+    }
+  }
+  window.__applySize=applySize; window.__SIZES=SIZES;
+  const mi=document.getElementById('szMinus'), pl=document.getElementById('szPlus');
+  if(mi) mi.onclick=()=>applySize(SZIDX-1);
+  if(pl) pl.onclick=()=>applySize(SZIDX+1);
+  /* URL 携带 size */
+  if(typeof syncURL==='function'){
+    const prev=syncURL;
+    syncURL=function(){
+      prev();
+      try{
+        const usp=new URLSearchParams(location.search);
+        if(SIZES[SZIDX]!==196) usp.set('size',String(SIZES[SZIDX])); else usp.delete('size');
+        history.replaceState(null,'',location.pathname+'?'+usp.toString());
+      }catch(e){}
+    };
+  }
+  /* 初始化：URL > localStorage > 默认；兼容旧 big */
+  let px=196;
+  try{
+    const usp=new URLSearchParams(location.search);
+    const u=parseInt(usp.get('size')||'',10);
+    if(u && SIZES.includes(u)) px=u;
+    else if(usp.get('dens')==='big') px=296;
+    else { const l=parseInt(localStorage.getItem('dg_size')||'',10); if(l && SIZES.includes(l)) px=l; }
+  }catch(e){}
+  applySize(SIZES.indexOf(px),true);
+})();
+
+/* ================= v1.8 谱系左栏一键收起 / 展开 ================= */
+(function(){
+  const b=document.getElementById('lsbtgl'), ob=document.getElementById('lsbopen'); if(!b||!ob) return;
+  const KEY='dg_lsc';
+  const sync=()=>{const off=document.body.classList.contains('lsc-off');
+    b.setAttribute('aria-expanded',off?'false':'true'); ob.setAttribute('aria-expanded',off?'false':'true');};
+  const fit=()=>{try{ if(typeof LV!=='undefined'&&LV.inited&&!LV.pending&&typeof fitLineage==='function') fitLineage('fit'); }catch(e){}
+    try{ window.dispatchEvent(new Event('resize')); }catch(e){}};
+  const set=off=>{document.body.classList.toggle('lsc-off',off);
+    try{localStorage.setItem(KEY,off?'1':'0');}catch(e){}
+    sync(); setTimeout(fit,60);};
+  b.onclick=()=>set(true);
+  ob.onclick=()=>set(false);
+  try{ if(localStorage.getItem(KEY)==='1') document.body.classList.add('lsc-off'); }catch(e){}
+  sync();
 })();
 </script>
 </body>
