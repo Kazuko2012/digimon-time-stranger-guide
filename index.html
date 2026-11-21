@@ -6,10 +6,21 @@
 <title>数码宝贝物语 时空异客 · 全进化关系图鉴</title>
 <style>
 :root{
+  /* == design tokens (UI unification v1.6) == */
+  --r-sm:8px; --r-md:10px; --r-lg:14px; --r-pill:999px;
+  --h-ico:32px; --h-ctl:32px; --h-in:36px; --h-in-lg:40px;
+  --fs-1:11px; --fs-2:12px; --fs-3:13px; --fs-4:14px; --fs-5:16px; --fs-6:20px;
+  --ctl-bg:rgba(255,255,255,.05); --ctl-bg-h:rgba(79,216,255,.14); --ctl-txt:#cfe0ff; --ctl-line:var(--line);
+  --sh-1:0 2px 10px rgba(0,0,0,.25); --sh-2:0 12px 32px rgba(0,0,0,.4); --sh-3:0 24px 64px rgba(0,0,0,.5);
+  --tr-c:.15s; --tr-m:.2s;
+  --z-drawer:70; --z-tip:110; --z-toast:120; --z-modal:130;
   --bg:#070b16; --bg2:#0c1226; --panel:rgba(18,26,48,.72); --line:rgba(120,160,220,.18);
   --txt:#e8f1ff; --sub:#93a6c8; --cyan:#4fd8ff; --violet:#a78bfa; --pink:#ff6fa5; --gold:#ffd479;
   --vac:#54c8ff; --dat:#5ce0a0; --vir:#c07cff; --fry:#ffd166; --unk:#8a97b8;
 }
+body.light{--ctl-bg:#fff;--ctl-bg-h:rgba(15,131,184,.08);--ctl-txt:#33465f;--ctl-line:rgba(15,131,184,.28);
+  --sh-1:0 2px 10px rgba(30,50,90,.08);--sh-2:0 12px 32px rgba(30,50,90,.16);--sh-3:0 24px 64px rgba(30,50,90,.22)}
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -825,6 +836,47 @@ body.light .langsw{background:rgba(20,45,90,.04)}
 body.light .langsw button{color:#4a5c78}
 body.light .langsw button.on{color:#0b2233}
 @media(max-width:1100px){.langsw button{padding:6px 7px;font-size:11.5px}}
+
+/* ================= UI UNIFICATION LAYER v1.6 =================
+   收敛圆角/字阶/控件高度/焦点态/阴影/分段控件/输入框/图标钮。
+   仅覆盖视觉规格，不改布局定位与已验收交互。 */
+/* 图标按钮统一 32x32 / r8 */
+.dclose,.dcopy{width:var(--h-ico);height:var(--h-ico);border-radius:var(--r-sm);
+  background:var(--ctl-bg);color:var(--ctl-txt);border:1px solid var(--ctl-line);
+  font-size:var(--fs-5);transition:background var(--tr-c),color var(--tr-c)}
+.dclose:hover,.dcopy:hover{background:var(--ctl-bg-h)}
+/* 分段控件统一：外 r10 pad3，内 r8 h26 */
+.viewtabs,.langsw{border-radius:var(--r-md);padding:3px;gap:3px;background:var(--ctl-bg);border:1px solid var(--ctl-line)}
+.viewtabs .vtab,.langsw button{height:26px;padding:0 12px;border-radius:var(--r-sm);
+  font-size:var(--fs-2);display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.dview{top:14px;padding:3px;gap:3px;border-radius:var(--r-md);background:var(--ctl-bg);border:1px solid var(--ctl-line)}
+.dview button{height:26px;padding:0 11px;border-radius:var(--r-sm);border:0;background:transparent;
+  color:var(--ctl-txt);font-size:var(--fs-2)}
+.dview button.on{background:rgba(79,216,255,.2);color:#eaf9ff}
+body.light .dview button.on{background:rgba(15,131,184,.12);color:#0b4a68}
+/* 筛选 chip / 主按钮 高度与字阶 */
+.chip{height:var(--h-ctl);padding:0 13px;display:inline-flex;align-items:center;font-size:var(--fs-2);border-radius:var(--r-pill)}
+.btn{height:var(--h-in-lg);padding:0 18px;display:inline-flex;align-items:center;border-radius:var(--r-md);font-size:var(--fs-3)}
+.fbtn{height:var(--h-in);padding:0 15px;display:inline-flex;align-items:center;border-radius:var(--r-md);font-size:var(--fs-3)}
+/* 输入框统一 r10 / 同 border / 同 focus（光环只留全局 focus-visible） */
+.search input{height:var(--h-in-lg);padding:0 16px 0 42px;border-radius:var(--r-md);font-size:var(--fs-4);
+  border:1px solid var(--ctl-line);background:var(--ctl-bg)}
+.search input:focus{box-shadow:none;border-color:var(--cyan)}
+.lside .lsq input{height:var(--h-in);padding:0 10px;border-radius:var(--r-md);font-size:var(--fs-2);
+  border:1px solid var(--ctl-line);background:var(--ctl-bg)}
+.pform input{height:var(--h-in);padding:0 12px;border-radius:var(--r-md);font-size:var(--fs-3);
+  border:1px solid var(--ctl-line);background:var(--ctl-bg)}
+/* 圆角收敛：卡片/面板 r14，浮层 r10，小徽标 r8 */
+.card{border-radius:var(--r-lg)}
+.sug,.ctip,.copytoast{border-radius:var(--r-md)}
+.badge{border-radius:var(--r-sm);font-size:var(--fs-1)}
+.sug{font-size:var(--fs-2)}
+/* 浮层阴影/动效/层级令牌 */
+.ctip{box-shadow:var(--sh-2);z-index:var(--z-tip);transition:opacity var(--tr-c),transform var(--tr-c)}
+.copytoast{box-shadow:var(--sh-2);z-index:var(--z-toast)}
+.kbdhelp{z-index:var(--z-modal)}
+/* 字阶去半像素（控件文本） */
+.vtab,.langsw button,.dview button,.chip,.sug{font-size:var(--fs-2)}
 </style>
 </head>
 <body>
