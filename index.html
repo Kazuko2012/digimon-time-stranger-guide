@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>数码宝贝物语 时空异客 · 全进化关系图鉴 v1.9.3</title>
+<title>数码宝贝物语 时空异客 · 全进化关系图鉴 v1.9.4</title>
 <style>
 :root{
   /* == design tokens (UI unification v1.6) == */
@@ -142,9 +142,9 @@ body.light .ghbtn:hover{border-color:var(--cyan);color:#0d2a44}
 /* ---------- DRAWER ---------- */
 .mask{position:fixed;inset:0;background:rgba(3,6,14,.72);backdrop-filter:blur(3px);z-index:60;opacity:0;pointer-events:none;transition:.25s}
 .mask.on{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:0;height:100vh;width:var(--dw,50vw);min-width:340px;max-width:100vw;z-index:70;overflow-y:auto;
+.drawer{position:fixed;top:0;right:0;height:100vh;width:var(--dw,50vw);min-width:340px;max-width:100vw;z-index:70;overflow-y:auto;overscroll-behavior-y:contain;
   background:linear-gradient(180deg,#0d1428,#080d1c 60%);border-left:1px solid rgba(79,216,255,.25);
-  box-shadow:-24px 0 60px rgba(0,0,0,.55);transform:translateX(102%);transition:transform .28s cubic-bezier(.22,.9,.3,1);padding:22px 22px 40px}
+  box-shadow:-24px 0 60px rgba(0,0,0,.55);transform:translateX(102%);transition:transform .28s cubic-bezier(.22,.9,.3,1);padding:0 22px 40px}
 .drawer.on{transform:none}
 .drawer::-webkit-scrollbar{width:8px}
 .drawer::-webkit-scrollbar-thumb{background:rgba(120,170,255,.25);border-radius:4px}
@@ -169,9 +169,11 @@ body.light .dview button{background:#fff;color:#33465f;border-color:rgba(15,131,
 body.light .dview button:hover{background:rgba(15,131,184,.08);color:#0b2233}
 body.light .dview button.on{border-color:rgba(15,131,184,.65);background:rgba(15,131,184,.12);color:#0b4a68}
 
-.dclose{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+.dtop{position:sticky;top:10px;height:0;display:flex;justify-content:flex-end;gap:8px;z-index:6;pointer-events:none;margin-right:-6px}
+.dtop>*{pointer-events:auto}
+.dclose{position:static;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
   background:rgba(255,255,255,.04);color:#cfe0ff;cursor:pointer;font-size:16px;line-height:1;font-family:inherit}
-.dhead{display:flex;gap:14px;align-items:flex-start;padding-right:36px}
+.dhead{display:flex;gap:14px;align-items:flex-start;padding-right:36px;margin-top:14px}
 .dhead .big{width:96px;height:96px;border-radius:16px;border:1px solid rgba(79,216,255,.3);background:
   radial-gradient(circle at 50% 30%,rgba(79,216,255,.18),rgba(255,255,255,.03));display:flex;align-items:center;justify-content:center;flex:none}
 .dhead .big img{width:86px;height:86px;object-fit:contain}
@@ -557,7 +559,7 @@ body.light .qclear:hover{color:#16223a}
 mark{background:rgba(79,216,255,.35);color:inherit;border-radius:3px;padding:0 1px}
 body.light mark{background:rgba(15,131,184,.22)}
 .card:focus-visible,.lsi:focus-visible,.lnode:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-.dcopy{position:absolute;top:14px;right:56px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#cfe0ff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
+.dcopy{position:static;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#cfe0ff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
 .dcopy:hover{border-color:rgba(79,216,255,.5);color:#4fd8ff}
 body.light .dcopy{background:#fff;color:#33465f}
 .copytoast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);background:#0a1122;border:1px solid rgba(79,216,255,.4);color:#cfe0ff;padding:8px 16px;border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:120}
@@ -857,13 +859,26 @@ body.light .langsw button{color:#4a5c78}
 body.light .langsw button.on{color:#0b2233}
 @media(max-width:1100px){.langsw button{padding:6px 7px;font-size:11.5px}}
 
-.dnav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-4px 210px 12px 0;padding:6px 0;background:var(--bg2)}
+.dnav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;padding:10px 210px 10px 0;background:var(--bg2)}
 .dclose,.dcopy{z-index:6}
-@media (max-width:900px){.dnav{margin-right:100px}}
-body.light .dnav{background:#f4f8fc}
-.dnav button{height:28px;padding:0 12px;border-radius:var(--r-sm,8px);border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(255,255,255,.05));color:var(--ctl-txt,#cfe0ff);font-size:12px;font-family:inherit;cursor:pointer}
+@media (max-width:900px){.dnav{padding-right:100px}}
+body.light .dnav{background:rgba(255,255,255,.96);backdrop-filter:blur(8px)}
+/* 抽屉顶栏控件：统一尺寸 + 提高对比度 */
+.dnav button,.dview button,.dcopy,.dclose{font-weight:600}
+body.light .dnav button,body.light .dview button,body.light .dcopy,body.light .dclose{
+  color:#17304d;border-color:rgba(15,131,184,.42);background:#fff}
+body.light .dnav button:hover:not(:disabled),body.light .dcopy:hover,body.light .dclose:hover{border-color:#0f83b8;color:#0b2a44}
+body.light .dview button.on{background:rgba(15,131,184,.16);color:#083a55}
+body.light .dnavpos{color:#3a4f6b}
+body.dark .dnav button,.dnav button{color:#e2ecfb}
+body.light .dnav button:disabled{color:#8fa3ba;border-color:rgba(15,131,184,.2)}
+.dnav button{height:34px;padding:0 15px;border-radius:9px;border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(255,255,255,.05));color:var(--ctl-txt,#dbe7ff);font-size:13px;font-family:inherit;cursor:pointer;transition:border-color .16s,background .16s}
+.dnav button:hover:not(:disabled){border-color:rgba(79,216,255,.5);background:var(--ctl-bg-h,rgba(79,216,255,.12))}
 .dnav button:disabled{opacity:.4;cursor:default}
-.dnavpos{font-size:11px;color:var(--sub)}
+.dnavpos{font-size:13px;color:#b9cdea;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+body.light .dnavpos{color:#3f5473}
+.dnavpos b{color:#ffffff}
+body.light .dnavpos b{color:#0b2a44}
 .sug.act{background:rgba(79,216,255,.16)}
 body.light .sug.act{background:rgba(15,131,184,.12)}
 /* ================= UI UNIFICATION LAYER v1.6 =================
@@ -878,9 +893,10 @@ body.light .sug.act{background:rgba(15,131,184,.12)}
 .viewtabs,.langsw{border-radius:var(--r-md);padding:3px;gap:3px;background:var(--ctl-bg);border:1px solid var(--ctl-line)}
 .viewtabs .vtab,.langsw button{height:26px;padding:0 12px;border-radius:var(--r-sm);
   font-size:var(--fs-2);display:inline-flex;align-items:center;justify-content:center;line-height:1}
-.dview{top:14px;padding:3px;gap:3px;border-radius:var(--r-md);background:var(--ctl-bg);border:1px solid var(--ctl-line)}
-.dview button{height:26px;padding:0 11px;border-radius:var(--r-sm);border:0;background:transparent;
-  color:var(--ctl-txt);font-size:var(--fs-2)}
+.dview{top:10px;padding:0;gap:0;border-radius:9px;overflow:hidden;background:var(--ctl-bg);border:1px solid var(--ctl-line)}
+.dview button{height:32px;padding:0 15px;border-radius:0;border:0;border-right:1px solid var(--ctl-line);background:transparent;
+  color:var(--ctl-txt,#dbe7ff);font-size:13px;cursor:pointer}
+.dview button:last-child{border-right:0}
 .dview button.on{background:rgba(79,216,255,.2);color:#eaf9ff}
 body.light .dview button.on{background:rgba(15,131,184,.12);color:#0b4a68}
 /* 筛选 chip / 主按钮 高度与字阶 */
@@ -1030,6 +1046,25 @@ body.light .lmini{background:rgba(255,255,255,.95)}
   body.lvgate .lsb{display:flex!important;padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
   body.lvgate .lsb button{height:40px;width:100%;font-size:13px}
 }
+
+/* ================= v1.9.4 详情抽屉顶栏：控件尺寸/字阶/对比度统一 ================= */
+.dnav button{height:34px;padding:0 15px;font-size:13px;border-radius:9px;font-weight:600}
+.dnavpos{font-size:13px;font-weight:600;letter-spacing:.01em}
+.dview{padding:0;gap:0;border-radius:9px;overflow:hidden}
+.dview button{height:32px;padding:0 15px;font-size:13px;border-radius:0;border:0;border-right:1px solid var(--ctl-line);
+  background:transparent;font-weight:600}
+.dview button:last-child{border-right:0}
+.dview button.on{font-weight:700}
+.dclose,.dcopy{width:34px;height:34px;border-radius:9px}
+.dclose svg,.dcopy svg{width:15px;height:15px}
+.dclose{font-size:15px}
+@media (max-width:640px){
+  .dnav{gap:6px;padding:8px 100px 8px 0}
+  .dnav button{height:32px;padding:0 9px;font-size:12px;white-space:nowrap}
+  .dnavpos{font-size:12px;white-space:nowrap}
+  .dclose,.dcopy{width:32px;height:32px}
+  .dtop{gap:6px;margin-right:-4px}
+}
 </style>
 </head>
 <body>
@@ -1121,8 +1156,8 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 <div class="mask" id="mask"></div>
 <aside class="drawer" id="drawer">
   <button class="dback" id="dback">‹ 返回</button>
-  <button class="dcopy" id="dcopy" type="button" title="复制此页链接" aria-label="复制此页链接"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
-  <button class="dclose" id="dclose">✕</button>
+  <div class="dtop"><button class="dcopy" id="dcopy" type="button" title="复制此页链接" aria-label="复制此页链接"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
+  <button class="dclose" id="dclose">✕</button></div>
   <div id="dbody"></div>
 </aside>
 <div class="dhnd" id="dhnd" title="左右拖动调整详情宽度（双击回到半屏）"></div>
@@ -1175,7 +1210,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.3 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.4 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -1674,7 +1709,7 @@ function openDrawer(n){
     dr.scrollTop=0;
     const order=rankNum(N.filter(match)); const oi=order.findIndex(x=>x.n===n);
     const nav=document.createElement('div'); nav.className='dnav';
-    nav.innerHTML='<button id="dprev" type="button"'+(oi<=0?' disabled':'')+'>‹ 上一只</button><span class="dnavpos">'+(oi+1)+' / '+order.length+'</span><button id="dnext" type="button"'+(oi<0||oi>=order.length-1?' disabled':'')+'>下一只 ›</button>';
+    nav.innerHTML='<button id="dprev" type="button"'+(oi<=0?' disabled':'')+'>‹ 上一只</button><span class="dnavpos">第 <b>'+(oi+1)+'</b> / '+order.length+' 只</span><button id="dnext" type="button"'+(oi<0||oi>=order.length-1?' disabled':'')+'>下一只 ›</button>';
     $('#dbody').prepend(nav);
     const step=k=>{const t=order[oi+k]; if(t) openDrawer(t.n);};
     $('#dprev').onclick=()=>step(-1); $('#dnext').onclick=()=>step(1);
