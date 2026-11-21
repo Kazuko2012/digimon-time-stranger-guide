@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>数码宝贝物语 时空异客 · 全进化关系图鉴</title>
+<title>数码宝贝物语 时空异客 · 全进化关系图鉴 v1.9.1</title>
 <style>
 :root{
   /* == design tokens (UI unification v1.6) == */
@@ -96,7 +96,7 @@ body.light.tbc .toolbar.showf .filters{background:#fbfdff;
 .fbtn{padding:11px 15px;flex:none;white-space:nowrap}
 .fbtn.on{border-color:var(--cyan);color:#fff;box-shadow:0 0 0 1px rgba(79,216,255,.35) inset}
 .fgroup{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.fgroup>.flabel{flex:0 0 52px;width:52px;display:inline-flex;align-items:center;margin-right:0;white-space:nowrap}
+.fgroup>.flabel{flex:0 0 auto;min-width:52px;width:auto;display:inline-flex;align-items:center;margin-right:0;padding-right:4px;white-space:nowrap}
 .flabel{font-size:12px;color:var(--sub);letter-spacing:.08em;margin-right:2px}
 .fnum{display:inline-block;min-width:15px;padding:0 4px;margin-left:4px;border-radius:8px;background:rgba(79,216,255,.22);
   color:var(--cyan);font-size:10.5px;font-weight:700;line-height:15px;text-align:center;letter-spacing:0;vertical-align:1px}
@@ -365,10 +365,11 @@ footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:#
 
 /* ---------- GRAPH ---------- */
 .gwrap{position:relative;height:min(78vh,880px);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:none;background-color:#070b16;
-  background:radial-gradient(900px 600px at 50% 40%,rgba(79,216,255,.08),rgba(7,11,22,.9) 70%)}
+  background-color:#070b16;background-image:radial-gradient(900px 600px at 50% 40%,rgba(79,216,255,.08),rgba(7,11,22,0) 70%)}
 .gwrap.on{display:block}
 /* 谱系图与卡片页共用全部上方内容，只切换下方内容区 */
 body.lvonly .hero,body.lvonly .note{display:none}
+body.lvonly footer{display:none}
 body.lvonly .gwrap{position:fixed;left:12px;right:12px;top:calc(var(--tbh,120px) + 8px);bottom:12px;height:auto;max-height:none;scroll-margin-top:0;z-index:30}
 #gcanvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
 #gcanvas.grabbing{cursor:grabbing}
@@ -511,6 +512,10 @@ body.light .lsi .jp{color:#7a8ba3}
 .lstats{font-size:12px;color:#a9c2e6;white-space:nowrap;flex:none}
 .lstats b{color:#fff}
 .llegend{display:flex;gap:8px;flex-wrap:nowrap;font-size:11px;color:#9db4d8;margin-left:auto;overflow:hidden;flex:0 1 auto;min-width:0;max-width:38%}
+/* v1.9d 图例放不下时整体隐藏（JS 判定），避免截半字贴住按钮；隐藏后按钮组仍右对齐 */
+.llegend.lg-hide{display:none!important}
+.llegend.lg-hide+.gtool{margin-left:auto}
+@media(min-width:881px) and (max-width:1280px){.llegend+.gtool{margin-left:auto}}
 .llegend span{display:flex;align-items:center;gap:4px;white-space:nowrap}
 .llegend i{width:8px;height:8px;border-radius:50%}
 .lghint{display:none}
@@ -581,7 +586,8 @@ body.light .lsl::-webkit-scrollbar-thumb{background:rgba(15,131,184,.25)}
 .lsi .jp{font-size:10px;color:#7f93b6;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
 .lsi .no{margin-left:6px;font-size:10.5px;color:#8ea3c6;font-variant-numeric:tabular-nums;flex:none}
 .lsi.on .no{color:#dff2ff}
-.lviewport{position:absolute;inset:52px 0 0 238px;overflow:hidden;cursor:grab}
+.lviewport{position:absolute;inset:52px 0 0 238px;overflow:hidden;cursor:grab;touch-action:none}
+.lviewport .lroute,.lviewport .loutline,.lviewport .lmini,.lviewport .lsug,.lviewport .lsl{touch-action:auto}
 .lviewport.grabbing{cursor:grabbing}
 .lstage{position:absolute;left:0;top:0;transform-origin:0 0}
 .ledges,.lnodes{position:absolute;left:0;top:0}
@@ -736,7 +742,7 @@ body.light footer{color:#6b7a90}
 body.light .viewtabs{background:rgba(20,45,90,.05)}
 body.light .vtab{color:#4a5c78}
 body.light .vtab.on{color:#0b2233}
-body.light .gwrap{background-color:#f7f9fd;background:radial-gradient(900px 600px at 50% 40%,rgba(15,131,184,.10),#f7f9fd 70%)}
+body.light .gwrap{background-color:#f7f9fd;background-image:radial-gradient(900px 600px at 50% 40%,rgba(15,131,184,.10),rgba(247,249,253,0) 70%)}
 body.light .gtool{background:#fff;color:#33465f;border-color:rgba(60,90,140,.28)}
 body.light .glegend{background:#fff}
 body.light .glegend div{color:#4a5c78}
@@ -955,11 +961,62 @@ body.light .lo-item.cur{background:rgba(15,131,184,.14)}
 .lmini{position:absolute;right:12px;bottom:12px;z-index:28;display:none;padding:6px;border:1px solid var(--line);border-radius:12px;
   background:rgba(9,14,26,.9);backdrop-filter:blur(8px)}
 .lmini.on{display:block}
+/* v1.9d 鹰眼开启时进化条件卡上移，避免两面板右下角重叠（鹰眼高 164px + 间距 10px） */
+#gwrap.mini-on .lcond{bottom:186px}
 .lmini canvas{display:block;width:220px;height:150px;cursor:crosshair;border-radius:6px}
 body.light .lmini{background:rgba(255,255,255,.95)}
 .lnode.flash{animation:lflash 1.4s ease}
 @keyframes lflash{0%,55%{box-shadow:0 0 0 3px rgba(79,216,255,.85)}100%{box-shadow:0 0 0 0 rgba(79,216,255,0)}}
 @media (max-width:1100px){#loutline,#lminiBtn{display:none}}
+/* ================= v1.9c 移动端谱系布局修复（≤880px） ================= */
+@media (max-width:880px){
+  .lside{display:none}
+  .lviewport{inset:var(--lbarh,52px) 0 0 0}
+  body.lvgate .lside{display:flex;width:100%;border-right:0}
+  body.lvgate .lviewport{display:none}
+  .lbar{height:auto;min-height:52px;flex-wrap:wrap;padding:6px 10px;gap:6px}
+  .lsearchwrap{flex:1 1 100%;min-width:0}
+  .lsearchwrap input{font-size:12px;padding:7px 10px}
+  .lstats{flex:1 1 auto;font-size:11.5px;white-space:normal}
+  .llegend{display:none}
+  .lbar .gtool{flex:none;padding:7px 10px;font-size:12px}
+  .tb-right{flex-wrap:wrap;margin-left:0;justify-content:flex-start;width:100%}
+  .tb-right .count{font-size:11.5px;flex:1 1 100%;text-align:left;margin:0}
+  body.lvonly .gwrap{left:0;right:0;bottom:0;border-radius:0;border-left:0;border-right:0}
+  /* 竖屏紧凑工具栏：压缩控件内边距与字阶，隐藏精灵图开关 */
+  .toolbar{padding:6px 0 6px;margin:0 0 6px}
+  .tb-top{gap:5px}
+  .search{flex:1 1 100%;min-width:0}
+  .search input{padding:9px 12px 9px 36px;font-size:13px;border-radius:10px}
+  .search .ico{left:12px;font-size:13px}
+  .btn{padding:7px 10px;font-size:12px;border-radius:9px}
+  .vtab{padding:7px 9px;font-size:12px}
+  .imgmode{padding:2px;border-radius:9px}
+  .imgmode button{padding:5px 8px;font-size:11.5px}
+  #sprmode{display:none!important}
+  #sizectl{display:none!important}
+  .langsw button{padding:5px 7px;font-size:11px}
+  .fbtn{padding:7px 9px;font-size:11.5px}
+  .theme-btn{padding:7px 9px;font-size:11.5px}
+  .tb-right{gap:6px}
+  .count{font-size:11px}
+  .filters{gap:10px}
+  .flabel,.fgroup>.flabel{font-size:11.5px;min-width:44px}
+  .filters .chip{padding:5px 9px;font-size:11.5px}
+  .lbar{min-height:0;padding:5px 8px;gap:5px}
+  .lsearchwrap input{padding:6px 8px;font-size:11.5px}
+  .lstats{flex:1 1 100%;font-size:11px}
+  .lbar .gtool{padding:6px 8px;font-size:11.5px}
+  body.lvonly .count{display:none}
+  /* 移动端：列表改为全屏抽屉，提供重新打开入口 */
+  #lsbopen{display:inline-flex!important;position:fixed;left:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:32}
+  body.lvgate #lsbopen{display:none!important}
+  body.lvgate .toolbar{display:none!important}
+  body.lvgate .gwrap{top:0}
+  body.lvgate .lside{top:0;bottom:0;padding-bottom:0}
+  body.lvgate .lsb{display:flex!important;padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+  body.lvgate .lsb button{height:40px;width:100%;font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -1103,7 +1160,8 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 </div>
 
 <footer>
-  数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。
+  数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
+  <span id="buildver" style="opacity:.75">v1.9.1 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 图例与面板防重叠</span>
 </footer>
 
 <script>
@@ -2792,18 +2850,22 @@ function edgeStroke(hot){
   if(document.body.classList.contains('light')) return hot?'rgba(15,131,184,.95)':'rgba(70,100,150,.55)';
   return hot?'rgba(79,216,255,.85)':'rgba(150,185,245,.45)';
 }
+function endLDrag(){ lDrag=null; lvp.classList.remove('grabbing'); }
 lvp.addEventListener('pointerdown',e=>{
-  if(e.target.closest('.lnode')) return;
+  if(e.target.closest('.lnode') || e.target.closest('.gtool') || e.target.closest('.lmini') || e.target.closest('.loutline') || e.target.closest('.lroute')) return;
   lDrag={x:e.clientX,y:e.clientY,tx:LV.tx,ty:LV.ty};
   lvp.classList.add('grabbing');
+  try{ lvp.setPointerCapture(e.pointerId); }catch(_){}
 });
 lvp.addEventListener('pointermove',e=>{
   if(!lDrag) return;
   LV.tx=lDrag.tx+(e.clientX-lDrag.x); LV.ty=lDrag.ty+(e.clientY-lDrag.y);
   applyTransform();
 });
-lvp.addEventListener('pointerup',()=>{ lDrag=null; lvp.classList.remove('grabbing'); });
-lvp.addEventListener('pointerleave',()=>{ lDrag=null; lvp.classList.remove('grabbing'); });
+lvp.addEventListener('pointerup',endLDrag);
+lvp.addEventListener('pointercancel',endLDrag);
+lvp.addEventListener('lostpointercapture',endLDrag);
+lvp.addEventListener('pointerleave',e=>{ if(!lDrag) return; if(e.pointerType==='touch') return; endLDrag(); });
 addEventListener('wheel',e=>{
   if(!LV.on || !document.body.classList.contains('lvonly')) return;
   /* 这些区域自己有滚动/交互，放行原生滚轮：左侧列表、路线卡、搜索框、详情抽屉、路线弹窗、抽屉工具条 */
@@ -3382,14 +3444,16 @@ document.addEventListener('keydown',e=>{
   const b=document.getElementById('lsbtgl'), ob=document.getElementById('lsbopen'); if(!b||!ob) return;
   const KEY='dg_lsc';
   const sync=()=>{const off=document.body.classList.contains('lsc-off');
-    b.setAttribute('aria-expanded',off?'false':'true'); ob.setAttribute('aria-expanded',off?'false':'true');};
+    b.setAttribute('aria-expanded',off?'false':'true'); ob.setAttribute('aria-expanded',off?'false':'true');
+    b.textContent=document.body.classList.contains('lvgate')?'‹ 返回谱系':'‹ 收起列表';};
   const fit=()=>{try{ if(typeof LV!=='undefined'&&LV.inited&&!LV.pending&&typeof fitLineage==='function') fitLineage('fit'); }catch(e){}
     try{ window.dispatchEvent(new Event('resize')); }catch(e){}};
   const set=off=>{document.body.classList.toggle('lsc-off',off);
     try{localStorage.setItem(KEY,off?'1':'0');}catch(e){}
     sync(); setTimeout(fit,60);};
-  b.onclick=()=>set(true);
-  ob.onclick=()=>set(false);
+  const isMob=()=>{ try{ return matchMedia('(max-width:880px)').matches; }catch(e){ return false; } };
+  b.onclick=()=>{ if(document.body.classList.contains('lvgate')){ document.body.classList.remove('lvgate'); sync(); return; } set(true); };
+  ob.onclick=()=>{ if(isMob()){ document.body.classList.add('lvgate'); sync(); return; } set(false); };
   try{ if(localStorage.getItem(KEY)==='1') document.body.classList.add('lsc-off'); }catch(e){}
   sync();
 })();
@@ -3398,13 +3462,30 @@ document.addEventListener('keydown',e=>{
 (function(){
   const tb=document.querySelector('.toolbar'); if(!tb||!window.ResizeObserver) return;
   let raf=0;
-  const setH=()=>{ document.documentElement.style.setProperty('--tbh', Math.round(tb.getBoundingClientRect().height)+'px'); if(window.__miniDraw) window.__miniDraw(); };
+  const lb=document.querySelector('.lbar');
+  const setH=()=>{ document.documentElement.style.setProperty('--tbh', Math.round(tb.getBoundingClientRect().height)+'px');
+    if(lb) document.documentElement.style.setProperty('--lbarh', Math.round(lb.getBoundingClientRect().height)+'px');
+    if(window.__miniDraw) window.__miniDraw(); };
   new ResizeObserver(()=>{
     if(raf) return;
     raf=requestAnimationFrame(()=>{ raf=0; setH(); });
   }).observe(tb);
+  if(lb && window.ResizeObserver) new ResizeObserver(()=>{ if(!raf){ raf=requestAnimationFrame(()=>{ raf=0; setH(); }); } }).observe(lb);
   window.addEventListener('resize',setH);
   setH();
+})();
+/* ================= v1.9d 谱系栏图例防截断：放不下时整体隐藏 ================= */
+(function(){
+  const lg=document.getElementById('llegend'), lb=document.querySelector('.lbar');
+  if(!lg||!lb) return;
+  let raf=0;
+  const fit=()=>{ lg.classList.remove('lg-hide');
+    if(getComputedStyle(lg).display==='none') return;
+    if(lg.scrollWidth>lg.clientWidth+1) lg.classList.add('lg-hide'); };
+  const sched=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0; fit(); }); };
+  window.addEventListener('resize',sched);
+  if(window.MutationObserver) new MutationObserver(sched).observe(lb,{childList:true,subtree:true,characterData:true});
+  fit();
 })();
 /* ================= v1.9 瀑布大纲 + 鹰眼缩略图 ================= */
 (function(){
@@ -3498,7 +3579,7 @@ document.addEventListener('keydown',e=>{
   /* ---- 开关 ---- */
   function setOutline(on){ outlineOn=on; panel.classList.toggle('on',on); bO.classList.toggle('on',on);
     try{localStorage.setItem('dg_outline',on?'1':'0');}catch(e){} if(on) refreshOutline(); }
-  function setMini(on){ miniOn=on; mini.classList.toggle('on',on); bM.classList.toggle('on',on);
+  function setMini(on){ miniOn=on; mini.classList.toggle('on',on); bM.classList.toggle('on',on); gw.classList.toggle('mini-on',on);
     try{localStorage.setItem('dg_mini',on?'1':'0');}catch(e){} if(on) miniDraw(); }
   bO.onclick=()=>setOutline(!outlineOn);
   bM.onclick=()=>setMini(!miniOn);
