@@ -43,6 +43,7 @@ An offline field guide and evolution-graph explorer for all 475 Digimon in *Digi
 
 **通用 / Common**
 
+- 详情侧栏可左右拖动调宽（双击回到半屏），顶部一键「半屏 / 全屏」，宽度与状态会被记住
 - 深浅双主题，选择会被记住
 - 搜索支持中文名 / 日文名 / 编号（编号自动三位补零）
 - 记忆上次状态：视图、中心、搜索词、筛选组合

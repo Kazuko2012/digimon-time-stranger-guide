@@ -122,13 +122,32 @@ body.light.tbc .toolbar.showf .filters{background:#fbfdff;
 /* ---------- DRAWER ---------- */
 .mask{position:fixed;inset:0;background:rgba(3,6,14,.72);backdrop-filter:blur(3px);z-index:60;opacity:0;pointer-events:none;transition:.25s}
 .mask.on{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:0;height:100vh;width:50vw;min-width:340px;max-width:96vw;z-index:70;overflow-y:auto;
+.drawer{position:fixed;top:0;right:0;height:100vh;width:var(--dw,50vw);min-width:340px;max-width:100vw;z-index:70;overflow-y:auto;
   background:linear-gradient(180deg,#0d1428,#080d1c 60%);border-left:1px solid rgba(79,216,255,.25);
   box-shadow:-24px 0 60px rgba(0,0,0,.55);transform:translateX(102%);transition:transform .28s cubic-bezier(.22,.9,.3,1);padding:22px 22px 40px}
 .drawer.on{transform:none}
 .drawer::-webkit-scrollbar{width:8px}
 .drawer::-webkit-scrollbar-thumb{background:rgba(120,170,255,.25);border-radius:4px}
 .dback{display:none}
+
+/* ---------- 侧栏：拖动调宽 / 半屏 / 全屏 ---------- */
+.dhnd{position:fixed;top:0;bottom:0;right:0;width:9px;z-index:72;display:none;cursor:col-resize;touch-action:none}
+.dhnd.on{display:block}
+.dhnd::after{content:'';position:absolute;left:3px;top:50%;transform:translateY(-50%);width:3px;height:64px;border-radius:2px;
+  background:rgba(79,216,255,.38);transition:height .15s,background .15s}
+.dhnd:hover::after,.dhnd:active::after{height:140px;background:rgba(79,216,255,.95)}
+body.light .dhnd::after{background:rgba(15,131,184,.35)}
+body.light .dhnd:hover::after,body.light .dhnd:active::after{background:rgba(15,131,184,.9)}
+body.dw-drag,body.dw-drag *{cursor:col-resize!important;user-select:none!important}
+.dview{position:fixed;top:13px;right:60px;z-index:71;display:none;gap:6px}
+.dview.on{display:flex}
+.dview button{height:30px;padding:0 11px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+  color:#cfe0ff;font-size:12px;font-family:inherit;cursor:pointer;line-height:1;transition:background .15s,color .15s,border-color .15s}
+.dview button:hover{background:rgba(79,216,255,.16);color:#fff}
+.dview button.on{border-color:rgba(79,216,255,.7);background:rgba(79,216,255,.2);color:#eaf9ff;font-weight:700}
+body.light .dview button{background:#fff;color:#33465f;border-color:rgba(15,131,184,.28)}
+body.light .dview button:hover{background:rgba(15,131,184,.08);color:#0b2233}
+body.light .dview button.on{border-color:rgba(15,131,184,.65);background:rgba(15,131,184,.12);color:#0b4a68}
 
 .dclose{position:absolute;top:14px;right:16px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
   background:rgba(255,255,255,.04);color:#cfe0ff;cursor:pointer;font-size:16px;line-height:1;font-family:inherit}
@@ -709,6 +728,7 @@ body.light .card .pic .no{color:#61718a}
   body.light .dback{background:#fff;color:#33465f}
   .dhead{padding-right:0}
   .drawer{overflow-x:hidden}
+  .dhnd,.dview{display:none!important}
   .dx-pers{font-size:9.5px}
   .dx-pers th,.dx-pers td{padding:3px 1.5px}
   .dx-pers th:first-child,.dx-pers td:first-child{width:56px}
@@ -844,6 +864,11 @@ body.light .imgmode button.on{color:#0b2233}
   <button class="dclose" id="dclose">✕</button>
   <div id="dbody"></div>
 </aside>
+<div class="dhnd" id="dhnd" title="左右拖动调整详情宽度（双击回到半屏）"></div>
+<div class="dview" id="dview">
+  <button id="dHalf" type="button">半屏</button>
+  <button id="dFull" type="button">全屏</button>
+</div>
 
 <div class="pmodal" id="pmodal">
   <div class="pbox">
@@ -1208,6 +1233,68 @@ function dxHTML(n){
   const desc=e.desc?`<div class="dx-h"><i></i>图鉴简介</div><div class="dx-desc">${e.desc}</div>`:'';
   return stats+pers+resist+skills+desc;
 }
+/* ---------- 侧栏：拖动调宽 / 一键半屏·全屏 ---------- */
+const DW_KEY='dg_dw', DV_KEY='dg_dview';
+let dview='half', dwCustom=0;
+const drawerEl=()=>document.getElementById('drawer');
+function placeDrawerTools(){
+  const dr=drawerEl(), h=document.getElementById('dhnd'), v=document.getElementById('dview');
+  if(!dr||!h||!v) return;
+  const w=dr.getBoundingClientRect().width, iw=window.innerWidth;
+  h.style.right=Math.max(0,w-4)+'px';
+  const hf=document.getElementById('dHalf'), fu=document.getElementById('dFull');
+  if(hf) hf.classList.toggle('on', dview==='half');
+  if(fu) fu.classList.toggle('on', dview==='full');
+}
+function setDrawerWidth(w,state){
+  const dr=drawerEl(); if(!dr) return;
+  const iw=window.innerWidth, min=Math.min(340,iw);
+  w=Math.max(min, Math.min(iw, Math.round(w||iw*0.5)));
+  if(state) dview=state;
+  dr.style.setProperty('--dw', w+'px');
+  if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on');
+  placeDrawerTools();
+}
+function applyDView(){
+  const iw=window.innerWidth;
+  if(dview==='full') setDrawerWidth(iw,'full');
+  else if(dview==='half') setDrawerWidth(iw*0.5,'half');
+  else setDrawerWidth(dwCustom||iw*0.5,'custom');
+}
+function showDrawerTools(on){
+  const h=document.getElementById('dhnd'), v=document.getElementById('dview');
+  if(h) h.classList.toggle('on',on);
+  if(v) v.classList.toggle('on',on);
+  if(on) placeDrawerTools();
+}
+(function initDrawerTools(){
+  try{ const v=localStorage.getItem(DV_KEY); if(v) dview=v; const w=+localStorage.getItem(DW_KEY)||0; if(w) dwCustom=w; }catch(e){}
+  const hf=document.getElementById('dHalf'), fu=document.getElementById('dFull'), h=document.getElementById('dhnd');
+  const save=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+  if(hf) hf.onclick=()=>{ applyDView(); setDrawerWidth(window.innerWidth*0.5,'half'); save(DV_KEY,'half'); };
+  if(fu) fu.onclick=()=>{ setDrawerWidth(window.innerWidth,'full'); save(DV_KEY,'full'); };
+  if(h){
+    h.addEventListener('dblclick',()=>{ setDrawerWidth(window.innerWidth*0.5,'half'); save(DV_KEY,'half'); });
+    h.addEventListener('pointerdown',ev=>{
+      if(ev.button!==undefined && ev.button!==0) return;
+      ev.preventDefault();
+      document.body.classList.add('dw-drag');
+      try{ h.setPointerCapture(ev.pointerId); }catch(e){}
+      const mv=e2=>{ dwCustom=Math.max(340, Math.min(window.innerWidth, window.innerWidth-e2.clientX)); setDrawerWidth(dwCustom,'custom'); };
+      const up=()=>{
+        document.body.classList.remove('dw-drag');
+        h.removeEventListener('pointermove',mv);
+        save(DV_KEY,'custom'); save(DW_KEY,String(Math.round(dwCustom)));
+        placeDrawerTools();
+      };
+      h.addEventListener('pointermove',mv);
+      h.addEventListener('pointerup',up,{once:true});
+      h.addEventListener('pointercancel',up,{once:true});
+    });
+  }
+  addEventListener('resize',()=>{ if(drawerEl() && drawerEl().classList.contains('on')) applyDView(); });
+})();
+
 function openDrawer(n){
   const d=BY[n]; if(!d) return;
   if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on');
@@ -1268,9 +1355,10 @@ function openDrawer(n){
   $('#lvHere').onclick=()=>{ closeDrawer(); if(typeof setView==='function'){ setView('lineage'); setCenter(d.n); if(typeof lsearch!=='undefined') lsearch.value=nameOf(d); } };
   if(typeof persTip==='function') persTip();
   if(typeof condTip==='function') condTip();
+  applyDView(); showDrawerTools(true);
   $('#drawer').classList.add('on'); $('#mask').classList.add('on');
 }
-function closeDrawer(){ $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
+function closeDrawer(){ $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); showDrawerTools(false); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
 
 // ---- path finder ----
 const adjCache={};
