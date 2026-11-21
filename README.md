@@ -6,6 +6,12 @@
 
 An offline field guide and evolution-graph explorer for all 475 Digimon in *Digimon Story: Time Stranger*. Everything runs from a single `index.html` — no build step, no runtime dependencies.
 
+## 多语言 / Languages
+
+右上角可切换 **中文 / English / 日本語**，并记忆上次选择、支持深链 `?lang=en` / `?lang=ja`。
+名称、简介与全部界面术语（阶段、属性、类型、性格、条件、技能数值、耐性）均本地化；英文与日文名称、简介取自 [digimon.net](https://digimon.net/) 官方图鉴。
+
+
 ## 预览 / Screenshots
 
 **图鉴卡片视图**：475 只全列表，顶部三组筛选（阶段 / 属性 / 条件）与「标准 / 大图 / 无图」密度切换。
