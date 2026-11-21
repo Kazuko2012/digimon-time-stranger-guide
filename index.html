@@ -837,6 +837,15 @@ body.light .langsw button{color:#4a5c78}
 body.light .langsw button.on{color:#0b2233}
 @media(max-width:1100px){.langsw button{padding:6px 7px;font-size:11.5px}}
 
+.dnav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-4px 210px 12px 0;padding:6px 0;background:var(--bg2)}
+.dclose,.dcopy{z-index:6}
+@media (max-width:900px){.dnav{margin-right:100px}}
+body.light .dnav{background:#f4f8fc}
+.dnav button{height:28px;padding:0 12px;border-radius:var(--r-sm,8px);border:1px solid var(--ctl-line,var(--line));background:var(--ctl-bg,rgba(255,255,255,.05));color:var(--ctl-txt,#cfe0ff);font-size:12px;font-family:inherit;cursor:pointer}
+.dnav button:disabled{opacity:.4;cursor:default}
+.dnavpos{font-size:11px;color:var(--sub)}
+.sug.act{background:rgba(79,216,255,.16)}
+body.light .sug.act{background:rgba(15,131,184,.12)}
 /* ================= UI UNIFICATION LAYER v1.6 =================
    收敛圆角/字阶/控件高度/焦点态/阴影/分段控件/输入框/图标钮。
    仅覆盖视觉规格，不改布局定位与已验收交互。 */
@@ -1193,6 +1202,13 @@ function hlName(t){
   if(i<0) return escTxt(t);
   return escTxt(t.slice(0,i))+'<mark>'+escTxt(t.slice(i,i+k.length))+'</mark>'+escTxt(t.slice(i+k.length));
 }
+/* v1.7 编号排序：精确 > 前缀 > 包含 */
+function rankNum(list){
+  const k=(kw||'').toLowerCase().replace(/^no\.?\s*/i,'').replace(/^#/,'');
+  if(!/^\d+$/.test(k)) return list;
+  const rank=d=>{const t=String(d.n).padStart(3,'0');return t===k?0:(t.startsWith(k)?1:2);};
+  return list.slice().sort((a,b)=>rank(a)-rank(b)||a.n-b.n);
+}
 function match(d){
   if(FS.size && !FS.has(d.s)) return false;
   if(FA.size && !FA.has(d.a)) return false;
@@ -1209,7 +1225,8 @@ function match(d){
 
 function render(){
   const g=$('#grid');
-  const list=N.filter(match);
+  let list=N.filter(match);
+  list=rankNum(list);
   $('#c-show').textContent=list.length;
   if(!list.length){ g.innerHTML='<div class="empty">没有匹配的数码兽，换个关键词试试～</div>'; return; }
   g.innerHTML=list.map(d=>{
@@ -1503,6 +1520,18 @@ function openDrawer(n){
     <button class="route-btn" id="fromHere">以「${nameOf(d)}」为起点查路线</button>
     <button class="route-btn lv-btn" id="lvHere">在谱系图中查看「${nameOf(d)}」的全部前后</button>
   `;
+  try{
+    const dr=$('#drawer'); const wasOpen=dr.classList.contains('on');
+    dr.scrollTop=0;
+    const order=rankNum(N.filter(match)); const oi=order.findIndex(x=>x.n===n);
+    const nav=document.createElement('div'); nav.className='dnav';
+    nav.innerHTML='<button id="dprev" type="button"'+(oi<=0?' disabled':'')+'>‹ 上一只</button><span class="dnavpos">'+(oi+1)+' / '+order.length+'</span><button id="dnext" type="button"'+(oi<0||oi>=order.length-1?' disabled':'')+'>下一只 ›</button>';
+    $('#dbody').prepend(nav);
+    const step=k=>{const t=order[oi+k]; if(t) openDrawer(t.n);};
+    $('#dprev').onclick=()=>step(-1); $('#dnext').onclick=()=>step(1);
+    window.__dstep=step;
+    if(!wasOpen){ let lf=document.activeElement; if(!lf||lf===document.body||lf===document.documentElement){ lf=document.querySelector('.card[data-n="'+n+'"]')||document.querySelector('.lsi[data-n="'+n+'"]')||lf; } window.__lastFocus=lf; setTimeout(()=>{const c=$('#dclose'); if(c&&c.focus) c.focus({preventScroll:true});},80); }
+  }catch(e){}
   $('#dbody').querySelectorAll('.ritem').forEach(r=>r.onclick=()=>{openDrawer(+r.dataset.n);});
   $('#fromHere').onclick=()=>{ openPath(nameOf(d)); };
   $('#lvHere').onclick=()=>{ closeDrawer(); if(typeof setView==='function'){ setView('lineage'); setCenter(d.n); if(typeof lsearch!=='undefined') lsearch.value=nameOf(d); } };
@@ -1511,7 +1540,7 @@ function openDrawer(n){
   applyDView(); showDrawerTools(true);
   $('#drawer').classList.add('on'); $('#mask').classList.add('on');
 }
-function closeDrawer(){ $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); showDrawerTools(false); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
+function closeDrawer(){ try{const lf=window.__lastFocus; if(lf&&document.contains(lf)&&lf.focus) lf.focus({preventScroll:true});}catch(e){} window.__lastFocus=null; $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); showDrawerTools(false); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
 
 // ---- path finder ----
 const adjCache={};
@@ -2746,9 +2775,10 @@ function suggest(){
   const k=lsearch.value.trim().toLowerCase().replace(/^no\.?\s*/i,'').replace(/^#/,'');
   if(!k){ lsug.style.display='none'; return; }
   const num=/^\d+$/.test(k)?parseInt(k,10):null;
-  const list=N.filter(d=> num!==null
+  let list=N.filter(d=> num!==null
       ? String(d.n).padStart(3,'0').indexOf(k)>=0
-      : searchKey(d).includes(k)).slice(0,10);
+      : searchKey(d).includes(k));
+  list=rankNum(list).slice(0,10);
   if(!list.length){ lsug.innerHTML='<div class="sug empty">没有匹配的数码兽</div>'; lsug.style.display='block'; return; }
   lsug.innerHTML=list.map(d=>`<div class="sug" data-n="${d.n}"><img width="112" height="112" decoding="async" src="${iconPath(d.n)}" alt=""><span>${nameOf(d)}</span><em>No.${String(d.n).padStart(3,'0')} · ${d.s}</em></div>`).join('');
   lsug.style.display='block';
@@ -3094,6 +3124,7 @@ document.addEventListener('keydown',e=>{
   if(e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight') && !typing){ e.preventDefault(); if(LV.on) goHist(e.key==='ArrowLeft'?-1:1); return; }
   if(e.key==='/' && !typing){ e.preventDefault(); const q=$('#q'); if(q){ q.focus(); q.select(); } return; }
   if(typing || e.metaKey || e.ctrlKey || e.altKey) return;
+  if($('#drawer').classList.contains('on') && (e.key==='ArrowLeft'||e.key==='ArrowRight')){ e.preventDefault(); if(window.__dstep) window.__dstep(e.key==='ArrowRight'?1:-1); return; }
   const sorted=N.slice().sort((a,b)=>a.n-b.n);
   const cur=LV.pending?21:LV.center;
   const idx=sorted.findIndex(d=>d.n===cur);
@@ -3113,6 +3144,73 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='c'||e.key==='C'){ e.preventDefault(); setView('cards'); }
   else if((e.key==='f'||e.key==='F') && LV.on){ e.preventDefault(); fitLineage('fit'); }
 });
+
+/* ================= v1.7 操作逻辑闭环 ================= */
+(function(){
+  /* 读屏反馈 */
+  ['#c-show','#copytoast','#lsicount'].forEach(sel=>{const e=document.querySelector(sel); if(e) e.setAttribute('aria-live','polite');});
+  /* 左栏联想键盘导航 */
+  if(typeof lsearch!=='undefined' && lsearch){
+    let lact=-1;
+    const items=()=>[...lsug.querySelectorAll('.sug[data-n]')];
+    const paint=()=>{const it=items(); it.forEach((el,i)=>el.classList.toggle('act',i===lact)); if(it[lact]) it[lact].scrollIntoView({block:'nearest'});};
+    lsearch.addEventListener('input',()=>{lact=-1;});
+    lsearch.addEventListener('keydown',e=>{
+      const it=items();
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){ if(!it.length) return; e.preventDefault(); lact=(lact+(e.key==='ArrowDown'?1:-1)+it.length)%it.length; paint(); }
+      else if(e.key==='Enter'){ if(it.length){ e.preventDefault(); (it[lact>=0?lact:0]).click(); lact=-1; } }
+      else if(e.key==='Escape'){ if(lsug.style.display!=='none'){ e.preventDefault(); e.stopPropagation(); lsug.style.display='none'; lact=-1; } }
+    });
+  }
+  /* 顶搜回车直达首个命中 */
+  const q=$('#q');
+  if(q) q.addEventListener('keydown',e=>{
+    if(e.key==='Enter' && !e.isComposing){ const list=rankNum(N.filter(match)); if(list.length){ e.preventDefault(); openDrawer(list[0].n); } }
+  });
+  /* 抽屉 Tab 焦点陷阱 */
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Tab') return;
+    const dr=$('#drawer'); if(!dr.classList.contains('on')) return;
+    if(typeof __topLayer==='function' && __topLayer()!=='drawer') return;
+    const f=[...dr.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled && x.getClientRects().length);
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(!dr.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+    else if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  },true);
+  /* URL 同步筛选/密度/图片/主题 */
+  if(typeof syncURL==='function'){
+    const orig=syncURL;
+    syncURL=function(){
+      orig();
+      try{
+        const usp=new URLSearchParams(location.search);
+        const put=(k,v)=>{ if(v) usp.set(k,v); else usp.delete(k); };
+        put('fs',[...FS].join('.')); put('fa',[...FA].join('.')); put('fc',[...FC].join('.'));
+        put('dens', IMGMODE!=='normal'?IMGMODE:'');
+        const spr=document.querySelector('#sprmode button.on');
+        put('spr', spr && spr.dataset.m!=='file' ? spr.dataset.m : '');
+        put('thm', document.body.classList.contains('light')?'light':'');
+        history.replaceState(null,'',location.pathname+'?'+usp.toString());
+      }catch(e){}
+    };
+  }
+  /* 深链还原筛选/密度/图片/主题 */
+  try{
+    const usp=new URLSearchParams(location.search);
+    const add=(k,set)=>{const v=usp.get(k); if(v) v.split('.').forEach(x=>{ if(x) set.add(x); });};
+    let changed=false;
+    ['fs','fa','fc'].forEach((k,i)=>{const before=[FS,FA,FC][i].size; add(k,[FS,FA,FC][i]); if([FS,FA,FC][i].size!==before) changed=true;});
+    if(changed){ buildFilters(); render(); if(window.__lvFilter) window.__lvFilter(); }
+    const dens=usp.get('dens');
+    if(dens && dens!==IMGMODE && typeof setImgMode==='function'){ setImgMode(dens,true); render(); }
+    const spr=usp.get('spr');
+    if(spr){ const b=document.querySelector('#sprmode button[data-m="'+spr+'"]'); if(b && !b.classList.contains('on')) b.click(); }
+    const thm=usp.get('thm');
+    if(thm==='light' && !document.body.classList.contains('light')){ const tb=document.getElementById('themeBtn'); if(tb) tb.click(); }
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
