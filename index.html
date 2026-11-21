@@ -887,6 +887,8 @@ body.light .langsw button.on{color:#0b2233}
       <div class="llegend" id="llegend"></div>
       <button class="gtool" id="lmulti">多选</button>
       <button class="gtool" id="lexpall">展开全部</button>
+      <button class="gtool" id="lhistback" title="上一个中心（Alt+←）" aria-label="上一个中心" disabled>‹</button>
+      <button class="gtool" id="lhistfwd" title="下一个中心（Alt+→）" aria-label="下一个中心" disabled>›</button>
       <button class="gtool" id="lzoomout" title="缩小（-）" aria-label="缩小">－</button>
       <button class="gtool" id="lzoomin" title="放大（+）" aria-label="放大">＋</button>
       <button class="gtool" id="lfit" title="适应窗口（双击空白处同样生效）">适应窗口</button>
@@ -1228,13 +1230,35 @@ function condTip(){
   __ctip=document.createElement('div'); __ctip.className='ctip'; document.body.appendChild(__ctip);
   const db=document.getElementById('dbody'); if(!db) return __ctip;
   const pick=ev=>ev.target.closest && ev.target.closest('.ritem[data-role="x"]');
+  const ctipHTML=o=>{
+    const cs=(o.c||[]).filter(x=>x&&x!=='无');
+    return `<div class="h">进化为 <b>${escTxt(nameOf(o))}</b> 的条件</div>`
+      + (cs.length?`<ul style="margin:0;padding:0">${cs.map(c=>`<li><em>◆</em><span>${escTxt(c)}</span></li>`).join('')}</ul>`
+                 :`<div class="none">无特殊条件</div>`);
+  };
+  const touch=window.matchMedia&&window.matchMedia('(hover: none)').matches;
+  if(touch){
+    db.addEventListener('click',ev=>{
+      const it=pick(ev); if(!it) return;
+      if(ev.target.closest && ev.target.closest('.go')) return;
+      ev.stopPropagation(); ev.preventDefault();
+      const n=+it.dataset.n;
+      if(__ctip.classList.contains('on') && __ctip.__for===n){ __ctip.classList.remove('on'); __ctip.__for=null; return; }
+      const o=BY[n]; if(!o) return;
+      __ctip.innerHTML=ctipHTML(o); __ctip.__for=n;
+      placeCtip(ev); __ctip.classList.add('on');
+    },true);
+    document.addEventListener('pointerdown',ev=>{
+      if(!__ctip.classList.contains('on')) return;
+      const t=ev.target;
+      if(t.closest && (t.closest('.ritem')||t.closest('.ctip'))) return;
+      __ctip.classList.remove('on'); __ctip.__for=null;
+    },true);
+  }
   db.addEventListener('mouseover',ev=>{
     const it=pick(ev); if(!it) return;
     const o=BY[+it.dataset.n]; if(!o) return;
-    const cs=(o.c||[]).filter(x=>x&&x!=='无');
-    __ctip.innerHTML=`<div class="h">进化为 <b>${escTxt(nameOf(o))}</b> 的条件</div>`
-      + (cs.length?`<ul style="margin:0;padding:0">${cs.map(c=>`<li><em>◆</em><span>${escTxt(c)}</span></li>`).join('')}</ul>`
-                 :`<div class="none">无特殊条件</div>`);
+    __ctip.innerHTML=ctipHTML(o);
     placeCtip(ev);
     __ctip.classList.add('on');
   },true);
@@ -2274,7 +2298,23 @@ function fitLineage(mode){
   }
   applyTransform();
 }
-function setCenter(id){ LV.center=id; LV.exp=new Set([id]); LV.expUp=new Set(); LV.extra=new Set(); LV.expCenter=id; LV.pending=false; saveState(); const eb=$('#lexpall'); if(eb) eb.textContent='展开全部'; document.body.classList.remove('lvgate'); if(lsearch) lsearch.value=nameOf(BY[id]); buildLineage(id); }
+function setCenter(id, fromHist){
+  LV.center=id; LV.exp=new Set([id]); LV.expUp=new Set(); LV.extra=new Set(); LV.expCenter=id; LV.pending=false; saveState();
+  const eb=$('#lexpall'); if(eb) eb.textContent='展开全部';
+  document.body.classList.remove('lvgate'); if(lsearch) lsearch.value=nameOf(BY[id]);
+  if(!fromHist){ LV.hist=(LV.hist||[]).slice(0,(LV.hi==null?-1:LV.hi)+1); if(LV.hist[LV.hist.length-1]!==id) LV.hist.push(id); LV.hi=LV.hist.length-1; }
+  syncHistBtns(); buildLineage(id);
+}
+function syncHistBtns(){
+  const b=$('#lhistback'), f=$('#lhistfwd');
+  if(b) b.disabled=!(LV.hist&&LV.hi>0);
+  if(f) f.disabled=!(LV.hist&&LV.hi<LV.hist.length-1);
+}
+function goHist(d){
+  if(!LV.hist||!LV.hist.length) return;
+  const ni=LV.hi+d; if(ni<0||ni>=LV.hist.length) return;
+  LV.hi=ni; setCenter(LV.hist[ni], true);
+}
 
 /* ---------------- 多选：最多两只，确认后只画两者之间的系谱 ---------------- */
 function toggleSel(id){
@@ -2448,6 +2488,8 @@ function setView(v){
     fitWrapHeight();
     if(!LV.inited){ LV.inited=true; buildSideList(); }
     else if(typeof filterSideList==='function') filterSideList();
+    if(!LV.hist||!LV.hist.length){ LV.hist=[LV.center]; LV.hi=0; }
+    syncHistBtns();
     if(LV.pending){
       document.body.classList.add('lvgate');
 
@@ -2606,6 +2648,8 @@ function zoomStep(k){
   LV.scale=ns; applyTransform();
 }
 $('#lzoomin').onclick=()=>zoomStep(1.2);
+$('#lhistback').onclick=()=>goHist(-1);
+$('#lhistfwd').onclick=()=>goHist(1);
 $('#lzoomout').onclick=()=>zoomStep(1/1.2);
 lvp.addEventListener('dblclick',e=>{ if(e.target.closest('.lnode')) return; fitLineage('fit'); });
 
@@ -2714,6 +2758,10 @@ let LANG='zh';
 let CURDRAW=0;
 const __zhText=new WeakMap(), __zhAttr=new WeakMap();
 UI_LANG.en['有等级数值']='Levels shown'; UI_LANG.ja['有等级数值']='レベル値あり';
+UI_LANG.en['上一个中心']='Previous center'; UI_LANG.ja['上一个中心']='前のセンター';
+UI_LANG.en['下一个中心']='Next center'; UI_LANG.ja['下一个中心']='次のセンター';
+UI_LANG.en['上一个中心（Alt+←）']='Previous center (Alt+←)'; UI_LANG.ja['上一个中心（Alt+←）']='前のセンター（Alt+←）';
+UI_LANG.en['下一个中心（Alt+→）']='Next center (Alt+→)'; UI_LANG.ja['下一个中心（Alt+→）']='次のセンター（Alt+→）';
 UI_LANG.en['清空搜索']='Clear search'; UI_LANG.ja['清空搜索']='検索をクリア';
 UI_LANG.en['清空列表搜索']='Clear list search'; UI_LANG.ja['清空列表搜索']='リスト検索をクリア';
 UI_LANG.en['复制此页链接']='Copy link to this page'; UI_LANG.ja['复制此页链接']='このページへのリンクをコピー';
@@ -2903,7 +2951,22 @@ function initLang(){
   btns.forEach(b=>b.onclick=()=>setLang(b.dataset.l));
   document.querySelector('#langsw').addEventListener('click',e=>e.stopPropagation());
   if(l!=='zh') setLang(l); else { applyNameLang(); syncLangBtns(); buildSideList(); if(kw) render(); }
-  const mo=new MutationObserver(()=>{ if(LANG==='zh'||__busy) return; if(__tick) return; __tick=setTimeout(()=>{__tick=0; applyNow(document.body);},24); });
+  let __pend=null;
+  const mo=new MutationObserver(muts=>{
+    if(LANG==='zh'||__busy) return;
+    if(!__pend) __pend=new Set();
+    for(const m of muts){
+      if(m.type==='characterData'){ if(m.target.parentNode) __pend.add(m.target.parentNode); }
+      else { if(m.addedNodes.length>20){ if(m.target.nodeType===1) __pend.add(m.target); } else { for(const n of m.addedNodes){ if(n.nodeType===1) __pend.add(n); else if(n.nodeType===3&&n.parentNode) __pend.add(n.parentNode); } } }
+    }
+    if(__tick) return;
+    __tick=setTimeout(()=>{
+      __tick=0; const roots=__pend; __pend=null;
+      if(!roots||!roots.size) return;
+      if(roots.size>40){ applyNow(document.body); return; }
+      for(const r of roots){ if(r.isConnected) applyNow(r); }
+    },24);
+  });
   mo.observe(document.body,{childList:true,subtree:true,characterData:true});
 }
 
@@ -2976,6 +3039,7 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keydown',e=>{
   const t=e.target;
   const typing = t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+  if(e.altKey && (e.key==='ArrowLeft'||e.key==='ArrowRight') && !typing){ e.preventDefault(); if(LV.on) goHist(e.key==='ArrowLeft'?-1:1); return; }
   if(e.key==='/' && !typing){ e.preventDefault(); const q=$('#q'); if(q){ q.focus(); q.select(); } return; }
   if(typing || e.metaKey || e.ctrlKey || e.altKey) return;
   const sorted=N.slice().sort((a,b)=>a.n-b.n);
