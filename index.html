@@ -1315,7 +1315,7 @@ body.light .recenter{background:rgba(255,255,255,.94);color:#0d5f86;box-shadow:0
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.12 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.13 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -1341,23 +1341,24 @@ function themeApply(t, save){
   if(save){ try{ localStorage.setItem(THEME_KEY,t); }catch(e){} }
   if(typeof window.__lvRedraw==='function') window.__lvRedraw();
 }
-/* 优先级：链接参数 > 手动记忆 > 系统外观 > 兜底深色 */
+/* 优先级：链接参数 ?theme= > 电脑/系统外观（默认）> 兜底深色；不再记忆手动切换，重开即回电脑默认 */
 function themeFromQuery(){ try{ const q=new URLSearchParams(location.search).get('theme'); return (q==='light'||q==='dark')?q:null; }catch(e){ return null; } }
 function themeSaved(){ try{ const v=localStorage.getItem(THEME_KEY); return (v==='light'||v==='dark')?v:null; }catch(e){ return null; } }
 function themeAuto(){ return (MQ_LIGHT && MQ_LIGHT.matches) ? 'light' : 'dark'; }
 function themeInit(){
-  const q=themeFromQuery(); if(q){ themeApply(q,false); return; }
-  const s=themeSaved(); if(s){ themeApply(s,false); return; }
-  themeApply(themeAuto(),false);
+  const q=themeFromQuery(); if(q){ themeApply(q,false); themeManual=true; return; }
+  themeApply(themeAuto(),false);   /* 首次进入 / 每次打开：取电脑默认外观 */
 }
 function themeToggle(){
-  themeApply(document.body.classList.contains('light')?'dark':'light', true);
+  themeManual=true;                /* 本会话内手动切换不落盘 */
+  themeApply(document.body.classList.contains('light')?'dark':'light', false);
 }
+let themeManual=false;   /* 本会话是否手动切过主题：切过就不再被系统变化覆盖 */
 themeInit();
 document.getElementById('themeBtn').onclick=themeToggle;
 if(MQ_LIGHT){
   const onSysChange=function(){
-    if(themeFromQuery()||themeSaved()) return;
+    if(themeManual) return;
     themeApply(themeAuto(),false);
   };
   if(MQ_LIGHT.addEventListener) MQ_LIGHT.addEventListener('change',onSysChange);
