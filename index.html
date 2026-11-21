@@ -1123,6 +1123,38 @@ body.light .selsort option{background:#fff;color:#17304d}
   .fchip{height:26px;font-size:11.5px;padding:0 9px;gap:5px}
   .card::before{top:10px;bottom:10px}
 }
+
+/* ================= v1.9.9 谱系中心强化 + 移动端卡片列表 ================= */
+/* ⑦ 中心节点更醒目：2px 环 + 双圈光晕 + 「中心」标签 */
+.lnode.center{box-shadow:0 0 0 2px #4fd8ff,0 0 0 5px rgba(79,216,255,.18),0 0 30px rgba(79,216,255,.5),inset 3px 0 0 #4fd8ff !important;z-index:9}
+.lnode.center::before{content:"中心";position:absolute;left:50%;top:-10px;transform:translateX(-50%);
+  height:16px;line-height:16px;padding:0 7px;border-radius:9px;background:#4fd8ff;color:#03202e;
+  font-size:10px;font-weight:800;letter-spacing:.04em;white-space:nowrap;z-index:4;pointer-events:none}
+body.light .lnode.center::before{background:#0d7ea6;color:#fff}
+
+/* 回到中心 浮标（中心节点滚出视野或详情抽屉盖住画布时出现） */
+.recenter{position:absolute;right:14px;top:64px;z-index:12;height:34px;padding:0 13px;border-radius:10px;
+  border:1px solid rgba(79,216,255,.5);background:rgba(9,18,32,.86);color:#d8f2ff;font-size:13px;font-weight:600;
+  font-family:inherit;cursor:pointer;backdrop-filter:blur(8px);display:inline-flex;align-items:center;gap:6px;
+  box-shadow:0 8px 22px rgba(0,0,0,.35);transition:.16s}
+.recenter:hover{border-color:var(--cyan);background:rgba(79,216,255,.18);color:#fff}
+.recenter[hidden]{display:none}
+body.light .recenter{background:rgba(255,255,255,.94);color:#0d5f86;box-shadow:0 8px 20px rgba(30,60,110,.16)}
+@media (max-width:880px){ .recenter{top:56px;right:10px;height:32px;font-size:12px} }
+
+/* ⑧ 移动端：卡片改为紧凑单列行（图左 / 信息右 / 徽章与 ↑↓ 右对齐） */
+@media (max-width:640px){
+  .grid{grid-template-columns:1fr;gap:8px;margin-top:6px}
+  .card{flex-direction:row;align-items:center;gap:10px;padding:8px 10px 8px 12px;border-radius:12px}
+  .card .top{flex:1 1 auto;min-width:0;gap:9px}
+  .card .pic{width:46px;height:46px;border-radius:9px}
+  .card .pic img{width:40px;height:40px}
+  .card .nm{font-size:14px}
+  .card .jp{font-size:11px;margin-top:2px}
+  .card .bot{flex:0 0 auto;flex-direction:column;align-items:flex-end;gap:4px;flex-wrap:nowrap;min-width:0}
+  .card .links{margin:0;order:2;font-size:10.5px;gap:6px}
+  .card .badge,.card .attr{font-size:10px;padding:2px 6px}
+}
 </style>
 </head>
 <body>
@@ -1185,6 +1217,7 @@ body.light .selsort option{background:#fff;color:#17304d}
   <div class="grid" id="grid"></div>
 
   <div class="gwrap" id="gwrap">
+    <button class="recenter" id="recenter" type="button" title="把谱系中心移到画布中间" hidden>◎ 回到中心</button>
     <div class="lbar">
       <div class="lsearchwrap">
         <input id="lsearch" aria-label="搜索谱系中心" placeholder="搜索数码兽作为谱系中心：亚古兽 / アグモン / 21">
@@ -1275,7 +1308,7 @@ body.light .selsort option{background:#fff;color:#17304d}
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.8 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.9 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -1834,10 +1867,10 @@ function openDrawer(n){
   $('#lvHere').onclick=()=>{ closeDrawer(); if(typeof setView==='function'){ setView('lineage'); setCenter(d.n); if(typeof lsearch!=='undefined') lsearch.value=nameOf(d); } };
   if(typeof persTip==='function') persTip();
   if(typeof condTip==='function') condTip();
-  applyDView(); showDrawerTools(true);
+  applyDView(); showDrawerTools(true); if(typeof updateRecenter==='function') updateRecenter();
   $('#drawer').classList.add('on'); $('#mask').classList.add('on');
 }
-function closeDrawer(){ try{const lf=window.__lastFocus; if(lf&&document.contains(lf)&&lf.focus) lf.focus({preventScroll:true});}catch(e){} window.__lastFocus=null; $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); showDrawerTools(false); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
+function closeDrawer(){ try{const lf=window.__lastFocus; if(lf&&document.contains(lf)&&lf.focus) lf.focus({preventScroll:true});}catch(e){} window.__lastFocus=null; $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); showDrawerTools(false); if(typeof updateRecenter==='function') updateRecenter(); if(typeof __ctip!=='undefined' && __ctip) __ctip.classList.remove('on'); }
 
 // ---- path finder ----
 const adjCache={};
@@ -2645,7 +2678,35 @@ function showCond(id){
     `<div class="cc" style="color:#7f93b6">${LV.multi?'点击卡片 → 选入 / 取消（最多 2 只）':'点击卡片 → 以此为中心展开'}；点击「i」→ 完整详情</div>`;
 }
 
-function applyTransform(){ lstage.style.transform=`translate(${LV.tx}px,${LV.ty}px) scale(${LV.scale})`; }
+function applyTransform(){ lstage.style.transform=`translate(${LV.tx}px,${LV.ty}px) scale(${LV.scale})`; if(typeof updateRecenter==='function') updateRecenter(); }
+/* v1.9.9 回到中心：把中心节点平移到画布中间（不改缩放），并处理浮标显隐 */
+function panToCenter(){
+  if(!LV.centerPos) return;
+  const w=lvp.clientWidth||1, h=lvp.clientHeight||1;
+  LV.tx=w/2-(LV.centerPos.x+CW/2)*LV.scale;
+  LV.ty=h/2-(LV.centerPos.y+CH/2)*LV.scale;
+  LV.needFit=false;
+  applyTransform();
+}
+let __rcRaf=0;
+function updateRecenter(){
+  if(__rcRaf) return;
+  __rcRaf=requestAnimationFrame(()=>{
+    __rcRaf=0;
+    const btn=document.getElementById('recenter'); if(!btn) return;
+    if(!LV.on){ btn.hidden=true; return; }
+    const drawerOpen=document.getElementById('drawer').classList.contains('on');
+    const el=lnodes.querySelector('.lnode.center');
+    if(!el){ btn.hidden=true; return; }
+    const r=el.getBoundingClientRect(), v=lvp.getBoundingClientRect();
+    const margin=Math.min(120,Math.max(40,r.height));
+    const visible=r.left<v.right-margin && r.right>v.left+margin && r.top<v.bottom-margin && r.bottom>v.top+margin;
+    btn.hidden = visible && !drawerOpen;
+  });
+}
+if(document.getElementById('recenter')) document.getElementById('recenter').onclick=()=>panToCenter();
+addEventListener('resize',()=>updateRecenter());
+
 function fitLineage(mode){
   LV.mode=mode||'c';
   const w=lvp.clientWidth||1;
