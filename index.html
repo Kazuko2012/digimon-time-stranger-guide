@@ -2735,8 +2735,9 @@ function trText(s){
   return null;
 }
 const ATTRS=['placeholder','title','aria-label'];
+const __trLastText=new WeakMap();
 function applyNow(root){
-  if(LANG==='zh'||!root) return;
+  if(!root) return;
   __busy=true;
   try{
     const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
@@ -2744,18 +2745,26 @@ function applyNow(root){
     while(n=w.nextNode()){
       const p=n.parentNode; if(!p) continue;
       const tag=p.nodeName; if(tag==='SCRIPT'||tag==='STYLE'||tag==='TEXTAREA') continue;
-      if(!__zhText.has(n)) __zhText.set(n,n.nodeValue);
-      const r=trText(__zhText.get(n));
+      if(p.closest && p.closest('#langsw')) continue;
+      /* 原文按节点记录；节点被重新赋值（值≠上次写回的值）时刷新原文，避免存到译文或旧文案 */
+      if(!__zhText.has(n) || n.nodeValue!==__trLastText.get(n)) __zhText.set(n,n.nodeValue);
+      const base=__zhText.get(n);
+      const r = (LANG==='zh') ? base : trText(base);
       if(r!=null && n.nodeValue!==r) n.nodeValue=r;
+      __trLastText.set(n, r!=null?r:n.nodeValue);
     }
     const els=(root.querySelectorAll?[root].concat(Array.from(root.querySelectorAll('*'))):[]);
     els.forEach(el=>{
+      if(el.closest && el.closest('#langsw')) { /* 语言按钮本身不翻译，但 aria-label 需要 */ }
       ATTRS.forEach(a=>{
         if(!el.hasAttribute||!el.hasAttribute(a)) return;
         let store=__zhAttr.get(el); if(!store){store={};__zhAttr.set(el,store);}
-        if(store[a]===undefined) store[a]=el.getAttribute(a);
-        const r=trText(store[a]);
+        const cur=el.getAttribute(a);
+        if(store[a]===undefined || cur!==store['_last_'+a]) store[a]=cur;
+        const base=store[a];
+        const r = (LANG==='zh') ? base : trText(base);
         if(r!=null && el.getAttribute(a)!==r) el.setAttribute(a,r);
+        store['_last_'+a]=(r!=null?r:base);
       });
     });
   }finally{ setTimeout(()=>{__busy=false;},0); }
@@ -2805,7 +2814,7 @@ window.setLang=function(l){
     else render();
   }catch(e){}
   if(CURDRAW && document.getElementById('drawer').classList.contains('on')){ try{ openDrawer(CURDRAW); }catch(e){} }
-  if(LANG!=='zh') applyNow(document.body);
+  applyNow(document.body);   // 切回中文时按原文回填所有文本与属性
 };
 function initLang(){
   let l=null;
