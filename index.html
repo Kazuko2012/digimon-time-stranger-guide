@@ -1076,6 +1076,53 @@ body.light .lmini{background:rgba(255,255,255,.95)}
   .fgroup{padding-left:44px;position:relative}
   .fgroup>.flabel{position:absolute;left:0;top:7px;width:auto;min-width:0;flex:none;font-size:11.5px;padding-right:0}
 }
+
+/* ================= v1.9.8 UI 优化：卡片阶段色条 / 生效筛选摘要 / 排序 / 控件尺寸统一 ================= */
+/* ① 卡片左缘阶段色条：475 张卡纵向扫读时按阶段分层 */
+.card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;
+  background:var(--stc,#8fa4c9);opacity:.85;pointer-events:none}
+body.img-none .card::before{top:9px;bottom:9px}
+body.lvonly .fsum{display:none}
+
+/* ② 生效筛选摘要条（筛选收起时也能看见当前生效条件） */
+.fsum{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-4px 0 14px}
+.fchip{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:999px;cursor:pointer;
+  border:1px solid rgba(79,216,255,.42);background:rgba(79,216,255,.12);color:#d9f1ff;font-size:12.5px;
+  font-family:inherit;font-weight:600;transition:.16s}
+.fchip i{font-style:normal;opacity:.65;font-size:13px;line-height:1}
+.fchip:hover{border-color:var(--cyan);background:rgba(79,216,255,.2);color:#fff}
+.fchip.fclear{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.05);color:#c3d6f2}
+body.light .fchip{border-color:rgba(15,131,184,.42);background:rgba(15,131,184,.08);color:#123a5c}
+body.light .fchip:hover{background:rgba(15,131,184,.14);color:#0b2a44}
+body.light .fchip.fclear{border-color:rgba(20,45,90,.2);background:rgba(20,45,90,.04);color:#4a5c78}
+
+/* ③ 排序下拉 */
+.selwrap{position:relative;display:inline-flex;align-items:center;flex:none}
+.selsort{height:34px;padding:0 26px 0 12px;border-radius:11px;border:1px solid var(--ctl-line);
+  background:var(--ctl-bg);color:var(--ctl-txt);font-family:inherit;font-size:13px;font-weight:600;
+  appearance:none;-webkit-appearance:none;cursor:pointer}
+.selsort:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(79,216,255,.16)}
+.selsort option{background:#0a1022;color:#dbe7ff}
+body.light .selsort option{background:#fff;color:#17304d}
+.selarrow{position:absolute;right:11px;top:50%;transform:translateY(-50%);pointer-events:none;opacity:.75;color:var(--ctl-txt)}
+
+/* ④ 工具栏控件尺寸统一：容器 34 / 内件 28 / 字阶 13 */
+.viewtabs,.imgmode,.langsw,.sizectl{height:34px;padding:2px;gap:2px;border-radius:11px;align-items:center}
+.viewtabs .vtab,.imgmode button,.langsw button,.sizectl button{height:28px;font-size:13px;border-radius:9px;padding:0 12px}
+.sizectl button{width:28px;padding:0}
+.toolbar .btn{height:34px;padding:0 15px;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+.toolbar .ghbtn{height:34px}
+
+@media (max-width:640px){
+  .viewtabs,.imgmode,.langsw,.sizectl{height:30px;padding:2px;gap:2px}
+  .viewtabs .vtab,.imgmode button,.langsw button{height:24px;font-size:11.5px;padding:0 8px}
+  .sizectl button{width:24px;height:24px}
+  .toolbar .btn{height:30px;padding:0 10px;font-size:12px}
+  .selsort{height:30px;font-size:12px;padding:0 24px 0 10px}
+  .fsum{gap:6px;margin:0 0 10px}
+  .fchip{height:26px;font-size:11.5px;padding:0 9px;gap:5px}
+  .card::before{top:10px;bottom:10px}
+}
 </style>
 </head>
 <body>
@@ -1114,6 +1161,12 @@ body.light .lmini{background:rgba(255,255,255,.95)}
       </div>
       <div class="tb-right">
       <div class="langsw" id="langsw" role="group" aria-label="语言"><button data-l="zh" class="on">中文</button><button data-l="en">EN</button><button data-l="ja">日本語</button></div>
+        <label class="selwrap" title="排序方式：编号 / 名称 / 阶段 / 关系数">
+          <select id="sortSel" class="selsort" aria-label="排序方式">
+            <option value="n">编号</option><option value="name">名称</option><option value="stage">阶段</option><option value="links">关系数</option>
+          </select>
+          <svg class="selarrow" viewBox="0 0 10 6" width="9" height="6" aria-hidden="true"><path d="M0 0h10L5 6z" fill="currentColor"/></svg>
+        </label>
         <button class="btn fbtn" id="fbToggle" aria-expanded="true" aria-controls="filtersBox" title="手动显示 / 隐藏筛选卡片（阶段、属性、条件）">收起筛选</button>
         <button class="btn theme-btn" id="themeBtn" title="切换白天 / 夜间模式">☀ 白天模式</button>
         <div class="count">当前显示 <b id="c-show">475</b> / 475</div>
@@ -1128,6 +1181,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
     </div>
   </div>
 
+  <div class="fsum" id="fsum" hidden></div>
   <div class="grid" id="grid"></div>
 
   <div class="gwrap" id="gwrap">
@@ -1221,7 +1275,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.7 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.8 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -1297,6 +1351,7 @@ const stages = ['全部', ...Array.from(new Set(N.map(d=>d.s)))];
 const attrs  = ['全部', ...Array.from(new Set(N.map(d=>d.a)))];
 const conds  = ['全部','无特殊条件','有等级数值','需 DLC'];
 let FS=new Set(), FA=new Set(), FC=new Set(), kw='';
+let sortMode='n';            /* n 编号 / name 名称 / stage 阶段 / links 关系数 */
 
 function chip(text,on,cb){
   const el=document.createElement('div');
@@ -1330,7 +1385,7 @@ function saveState(){
       kw: kw||'',
       q: ($('#q')?$('#q').value:''),
       sq: (typeof lsideSearch!=='undefined'&&lsideSearch?lsideSearch.value:''),
-      fs: [...FS], fa: [...FA], fc: [...FC]
+      fs: [...FS], fa: [...FA], fc: [...FC], s: sortMode
     }));
   }catch(e){}
 }
@@ -1350,10 +1405,12 @@ function restoreState(){
   if(Array.isArray(st.fs)) st.fs.forEach(x=>FS.add(x));
   if(Array.isArray(st.fa)) st.fa.forEach(x=>FA.add(x));
   if(Array.isArray(st.fc)) st.fc.forEach(x=>FC.add(x));
+  if(st.s) sortMode=st.s;
+  const ssel=document.getElementById('sortSel'); if(ssel) ssel.value=sortMode;
   kw=st.kw||'';
   if($('#q')) $('#q').value=st.q||'';
   if(typeof lsideSearch!=='undefined'&&lsideSearch) lsideSearch.value=st.sq||'';
-  buildFilters(); render();
+  buildFilters(); render(); renderFilterSummary();
   if(st.c && BY[st.c]){ LV.center=+st.c; LV.pending=false; LV.exp=new Set([LV.center]); LV.expUp=new Set(); LV.extra=new Set(); LV.expCenter=LV.center; }
   if(st.v==='lineage') setView('lineage');
   else if(typeof filterSideList==='function') filterSideList();
@@ -1361,7 +1418,7 @@ function restoreState(){
 }
 
 function refreshFilters(){
-  buildFilters(); render(); saveState();
+  buildFilters(); render(); renderFilterSummary(); saveState();
   if(window.__lvFilter) window.__lvFilter();
 }
 function syncFL(el,label,n){ const f=el.querySelector('.flabel'); if(f) f.innerHTML=label+(n>1?`<b class="fnum">${n}</b>`:''); }
@@ -1404,6 +1461,50 @@ function rankNum(list){
   const rank=d=>{const t=String(d.n).padStart(3,'0');return t===k?0:(t.startsWith(k)?1:2);};
   return list.slice().sort((a,b)=>rank(a)-rank(b)||a.n-b.n);
 }
+function sortList(list){
+  if(sortMode==='name'){
+    return list.slice().sort((a,b)=>nameOf(a).localeCompare(nameOf(b),'zh-Hans-CN-u-co-pinyin'));
+  }
+  if(sortMode==='stage'){
+    const ord=stages;
+    return list.slice().sort((a,b)=>{
+      const ia=ord.indexOf(a.s), ib=ord.indexOf(b.s);
+      return (ia<0?99:ia)-(ib<0?99:ib)||a.n-b.n;
+    });
+  }
+  if(sortMode==='links'){
+    return list.slice().sort((a,b)=>((b.v||[]).length+(b.x||[]).length)-((a.v||[]).length+(a.x||[]).length)||a.n-b.n);
+  }
+  return list;
+}
+function activeFilters(){
+  const out=[];
+  FS.forEach(v=>out.push({k:'stage',v,l:v}));
+  FA.forEach(v=>out.push({k:'attr',v,l:v}));
+  FC.forEach(v=>out.push({k:'cond',v,l:v}));
+  if(kw) out.push({k:'kw',v:kw,l:'搜索「'+(kw.length>8?kw.slice(0,8)+'…':kw)+'」'});
+  return out;
+}
+function escAttr(v){ return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function renderFilterSummary(){
+  const bar=document.getElementById('fsum'); if(!bar) return;
+  const items=activeFilters();
+  if(typeof fbtnSync==='function') fbtnSync();
+  if(!items.length){ bar.hidden=true; bar.innerHTML=''; return; }
+  bar.hidden=false;
+  bar.innerHTML=items.map(it=>`<button type="button" class="fchip" data-k="${it.k}" data-v="${escAttr(it.v)}">${escTxt(it.l)}<i>×</i></button>`).join('')
+    + `<button type="button" class="fchip fclear" data-k="all">清除全部</button>`;
+  bar.querySelectorAll('.fchip').forEach(b=>b.onclick=ev=>{
+    ev.stopPropagation();
+    const k=b.dataset.k, v=b.dataset.v;
+    if(k==='all'){ FS.clear(); FA.clear(); FC.clear(); kw=''; const q=document.getElementById('q'); if(q) q.value=''; }
+    else if(k==='stage') FS.delete(v);
+    else if(k==='attr') FA.delete(v);
+    else if(k==='cond') FC.delete(v);
+    else if(k==='kw'){ kw=''; const q=document.getElementById('q'); if(q) q.value=''; }
+    refreshFilters();
+  });
+}
 function match(d){
   if(FS.size && !FS.has(d.s)) return false;
   if(FA.size && !FA.has(d.a)) return false;
@@ -1421,12 +1522,12 @@ function match(d){
 function render(){
   const g=$('#grid');
   let list=N.filter(match);
-  list=rankNum(list);
+  list=rankNum(sortList(list));
   $('#c-show').textContent=list.length;
   if(!list.length){ g.innerHTML='<div class="empty">没有匹配的数码兽，换个关键词试试～</div>'; return; }
   g.innerHTML=list.map(d=>{
     const sc=stageColor[d.s]||'#8fa4c9', ac=attrColor[d.a]||'var(--unk)';
-    return `<article class="card" data-n="${d.n}" tabindex="0" role="button" aria-label="${escTxt(nameOf(d))}" style="--glow:${sc}22">
+    return `<article class="card" data-n="${d.n}" tabindex="0" role="button" aria-label="${escTxt(nameOf(d))}" style="--glow:${sc}22;--stc:${sc}">
       <div class="top">${pic(d.n)}
         <div class="names">
           <div class="nm">${hlName(nameOf(d))}</div>
@@ -1441,6 +1542,7 @@ function render(){
     </article>`;
   }).join('');
   g.querySelectorAll('.card').forEach(c=>c.onclick=()=>openDrawer(+c.dataset.n));
+  renderFilterSummary();
   // 首屏前几张优先加载，其余交给浏览器的懒加载
   const ims=g.querySelectorAll('.card .pic img');
   for(let i=0;i<8&&i<ims.length;i++){ ims[i].loading='eager'; ims[i].setAttribute('fetchpriority','high'); }
@@ -2836,9 +2938,12 @@ function tbcRef(){                       /* 筛选卡在文档中的自然上沿
 function fbtnSync(){
   const fb=document.getElementById('fbToggle'); if(!fb) return;
   const open=!document.body.classList.contains('tbc') || document.querySelector('.toolbar').classList.contains('showf');
-  fb.textContent = open?'收起筛选':'显示筛选';
+  const n=FS.size+FA.size+FC.size+(kw?1:0);
+  fb.innerHTML = (open?'收起筛选':'显示筛选')+(n?`<b class="fnum">${n}</b>`:'');
+  fb.title = n?`已启用 ${n} 个筛选条件`:'手动显示 / 隐藏筛选卡片（阶段、属性、条件）';
   fb.setAttribute('aria-expanded', open?'true':'false');
   fb.classList.toggle('on',open);
+  fb.classList.toggle('act', !!n);
 }
 function setTbc(on){
   if(on===tbcOn){ fbtnSync(); return; }
@@ -2885,6 +2990,18 @@ fbtnSync();
   document.body.classList.add('tbc');
   tbcOn=true;
   fbtnSync();
+})();
+/* v1.9.8 排序切换 + ⌘K / Ctrl+K 聚焦搜索 */
+(function(){
+  const sel=document.getElementById('sortSel');
+  if(sel){ sel.value=sortMode; sel.onchange=()=>{ sortMode=sel.value; render(); renderFilterSummary(); saveState(); }; }
+  document.addEventListener('keydown',e=>{
+    const k=(e.key||'').toLowerCase();
+    if(k==='k'&&(e.metaKey||e.ctrlKey)){
+      const q=document.getElementById('q');
+      if(q){ e.preventDefault(); q.focus(); q.select(); }
+    }
+  },true);
 })();
 document.getElementById('fbToggle').onclick=e=>{
   e.stopPropagation();
