@@ -1703,7 +1703,7 @@ function drawPath(){
 // ---- events ----
 /* 顶部搜索：防抖 + 输入法组字保护 */
 let qTimer=0, qComposing=false;
-function applyQ(){ kw=($('#q').value||'').trim(); render(); saveState(); }
+function applyQ(){ kw=($('#q').value||'').trim(); render(); if(typeof LV!=='undefined'&&LV.on&&typeof filterSideList==='function') filterSideList(); saveState(); }
 const qInput=$('#q');
 qInput.addEventListener('compositionstart',()=>{ qComposing=true; });
 qInput.addEventListener('compositionend',()=>{ qComposing=false; clearTimeout(qTimer); qTimer=setTimeout(applyQ,60); });
@@ -1835,7 +1835,8 @@ function updateSideActive(){
 }
 function filterSideList(){
   if(!lsideList) return;
-  const raw=(lsideSearch?lsideSearch.value:'').trim().toLowerCase().replace(/^no\.?\s*/i,'').replace(/^#/,'');
+  /* 谱系视图里顶部搜索框（#q）同样要作用于左侧列表；列表自带搜索框优先 */
+  const raw=((lsideSearch&&lsideSearch.value)||((typeof LV!=='undefined'&&LV.on&&$('#q'))?$('#q').value:'')||'').trim().toLowerCase().replace(/^no\.?\s*/i,'').replace(/^#/,'');
   const num=/^\d+$/.test(raw)?parseInt(raw,10):null;
   let shown=0;
   lsideList.querySelectorAll('.lsi').forEach(el=>{
@@ -1849,7 +1850,7 @@ function filterSideList(){
     if(show) shown++;
   });
   const cnt=document.getElementById('lsicount');
-  const fOn=(FS.size||FA.size||FC.size);
+  const fOn=(FS.size||FA.size||FC.size||raw);
   const total=(typeof nodes!=='undefined'&&nodes.length)?nodes.length:(lsideList.querySelectorAll('.lsi').length);
   if(cnt){ cnt.textContent=fOn?(shown+'/'+total):String(shown); cnt.title='当前列表计数'+(fOn?'（已筛选）':''); }
   lsideList.classList.toggle('filtered',!!fOn);                  // 筛选生效时滚动条变色
