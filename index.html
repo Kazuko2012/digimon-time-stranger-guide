@@ -1126,11 +1126,8 @@ body.light .selsort option{background:#fff;color:#17304d}
 
 /* ================= v1.9.9 谱系中心强化 + 移动端卡片列表 ================= */
 /* ⑦ 中心节点更醒目：2px 环 + 双圈光晕 + 「中心」标签 */
-.lnode.center{box-shadow:0 0 0 2px #4fd8ff,0 0 0 5px rgba(79,216,255,.18),0 0 30px rgba(79,216,255,.5),inset 3px 0 0 #4fd8ff !important;z-index:9}
-.lnode.center::before{content:"中心";position:absolute;left:50%;top:-10px;transform:translateX(-50%);
-  height:16px;line-height:16px;padding:0 7px;border-radius:9px;background:#4fd8ff;color:#03202e;
-  font-size:10px;font-weight:800;letter-spacing:.04em;white-space:nowrap;z-index:4;pointer-events:none}
-body.light .lnode.center::before{background:#0d7ea6;color:#fff}
+.lnode.center{border-color:var(--stc,#4fd8ff) !important;box-shadow:0 0 0 2px var(--stc,#4fd8ff),0 0 0 5px var(--stcs,rgba(79,216,255,.2)),0 0 26px var(--stcg,rgba(79,216,255,.5)),inset 3px 0 0 var(--stc,#4fd8ff) !important;z-index:9}
+
 
 /* 回到中心 浮标（中心节点滚出视野或详情抽屉盖住画布时出现） */
 .recenter{position:absolute;right:14px;top:64px;z-index:12;height:34px;padding:0 13px;border-radius:10px;
@@ -1308,7 +1305,7 @@ body.light .recenter{background:rgba(255,255,255,.94);color:#0d5f86;box-shadow:0
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.9 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.10 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -2518,7 +2515,7 @@ function buildLineage(center, keepView){
     const badge = canToggle ? `<button class="lexp${expd?' open':''}" data-n="${id}" title="${expd?'收起这一支':'展开下一层'}">${expd?'–':'+'+descN[id]}</button>` : '';
     const upOpen=LV.expUp.has(id);
     const upBadge=(upN[id]||upOpen)?`<button class="lexp up${upOpen?' open':''}" data-n="${id}" title="${upOpen?'收起上游进化源':'展开上游进化源（这只从哪里进化来）'}">${upOpen?'–':'↑'+(upN[id]>99?'99+':upN[id])}</button>`:'';
-    return `<div class="${cls}" data-n="${id}" tabindex="0" role="button" style="left:${p.x}px;top:${p.y}px;border-color:${isC?'#4fd8ff':sc+'66'};box-shadow:inset 3px 0 0 ${sc}">
+    return `<div class="${cls}" data-n="${id}" tabindex="0" role="button" style="left:${p.x}px;top:${p.y}px;border-color:${isC?sc:sc+'66'};box-shadow:inset 3px 0 0 ${sc};--stc:${sc};--stcs:${sc}38;--stcg:${sc}88">
       <img width="112" height="112" decoding="async" src="${iconPath(id)}" alt="" onerror="this.style.opacity=.12">
       <div class="lt"><b>${nameOf(d)}</b><span>No.${String(id).padStart(3,'0')} · ${d.s}</span></div>
       <button class="linfo" data-n="${id}" title="查看完整详情">i</button>${upBadge}${badge}
