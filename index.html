@@ -526,7 +526,7 @@ body.light .lghint b{color:#123a6b}
   border:1px solid rgba(79,216,255,.5);background:rgba(79,216,255,.18);color:#bdeaff;font-size:10.5px;font-weight:700;
   font-family:inherit;line-height:15px;cursor:pointer;z-index:2}
 .lnode .lexp:hover{background:rgba(79,216,255,.34);color:#fff}
-.lnode .lexp::after{content:'';position:absolute;inset:-8px;border-radius:14px}   /* 扩大点击热区，视觉不变 */
+.lnode .lexp::after{content:'';position:absolute;inset:-3px;border-radius:14px}   /* 扩大点击热区（已收窄，避免压到右上角 i 按钮） */
 button:focus-visible,input:focus-visible,.chip:focus-visible,.lsi:focus-visible,.card:focus-visible,
 .lnode:focus-visible,.sug:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 @media (prefers-reduced-motion: reduce){
@@ -550,6 +550,7 @@ body.light .lnode .lexp.open{border-color:rgba(120,95,210,.45);background:rgba(1
 .lnode .linfo{position:absolute;right:4px;top:4px;width:17px;height:17px;border-radius:50%;
   border:1px solid rgba(120,170,255,.35);background:rgba(10,16,32,.92);color:#9fc4ff;font-size:10.5px;
   line-height:1;cursor:pointer;font-family:inherit;padding:0}
+.lstage .lnode .linfo{right:-6px;top:-12px;box-shadow:0 2px 6px rgba(0,0,0,.45)}   /* 谱系节点：i 挪到右上角外，离 +N 远一点 */
 .lcond{position:absolute;right:12px;bottom:12px;max-width:340px;padding:10px 12px;border-radius:10px;
   border:1px solid rgba(79,216,255,.4);background:rgba(8,14,28,.96);font-size:12px;color:#d6e6ff;
   display:none;z-index:25;line-height:1.65;box-shadow:0 12px 30px rgba(0,0,0,.5)}
