@@ -517,6 +517,36 @@ body.light .lghint b{color:#123a6b}
 .lside{position:absolute;left:0;top:52px;bottom:0;width:238px;display:flex;flex-direction:column;
   border-right:1px solid var(--line);background:rgba(9,14,26,.74);backdrop-filter:blur(8px);z-index:4}
 .lside .lsq{padding:7px 8px;border-bottom:1px solid var(--line);flex:none;display:flex;align-items:center;gap:6px}
+/* --- UX batch1 --- */
+.search input{padding-right:32px}
+.lsq{position:relative}
+.lsq input{padding-right:34px}
+.qclear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:7px;border:0;background:rgba(120,150,200,.18);color:#9fb4d8;cursor:pointer;font-size:12px;line-height:1;display:none;align-items:center;justify-content:center;font-family:inherit}
+.qclear.on{display:inline-flex}
+.qclear:hover{background:rgba(120,150,200,.32);color:#cfe0ff}
+body.light .qclear{color:#5a6f8f}
+body.light .qclear:hover{color:#16223a}
+.lsq .qclear{right:44px}
+mark{background:rgba(79,216,255,.35);color:inherit;border-radius:3px;padding:0 1px}
+body.light mark{background:rgba(15,131,184,.22)}
+.card:focus-visible,.lsi:focus-visible,.lnode:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.dcopy{position:absolute;top:14px;right:56px;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#cfe0ff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit}
+.dcopy:hover{border-color:rgba(79,216,255,.5);color:#4fd8ff}
+body.light .dcopy{background:#fff;color:#33465f}
+.copytoast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);background:#0a1122;border:1px solid rgba(79,216,255,.4);color:#cfe0ff;padding:8px 16px;border-radius:10px;font-size:12.5px;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:120}
+.copytoast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+body.light .copytoast{background:#fff;color:#16223a;border-color:rgba(15,131,184,.4);box-shadow:0 10px 26px rgba(30,50,90,.18)}
+.kbdhelp{position:fixed;inset:0;background:rgba(4,8,18,.6);display:none;align-items:center;justify-content:center;z-index:130}
+.kbdhelp.on{display:flex}
+body.light .kbdhelp{background:rgba(20,35,60,.35)}
+.kbox{position:relative;width:min(430px,92vw);max-height:82vh;overflow:auto;background:#0a1122;border:1px solid rgba(79,216,255,.35);border-radius:14px;padding:20px 22px}
+body.light .kbox{background:#fff;border-color:rgba(15,131,184,.35);box-shadow:0 20px 50px rgba(30,50,90,.25)}
+.kbox h3{margin:0 0 12px;font-size:15px}
+.kbox table{width:100%;border-collapse:collapse;font-size:12.5px}
+.kbox td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.kbox td:first-child{white-space:nowrap;width:118px}
+.kbox kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border-radius:6px;border:1px solid var(--line);background:rgba(120,150,200,.12);font-family:inherit;font-size:11.5px}
+.kx{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--sub);cursor:pointer;font-family:inherit}
 .lsicount{flex:none;font-size:10.5px;color:var(--sub);min-width:26px;text-align:right}
 .lsl.filtered::-webkit-scrollbar-thumb{background:rgba(64,200,160,.55)}
 body.light .lsl.filtered::-webkit-scrollbar-thumb{background:rgba(10,150,110,.45)}
@@ -818,7 +848,7 @@ body.light .langsw button.on{color:#0b2233}
 
   <div class="toolbar">
     <div class="tb-top">
-      <div class="search"><span class="ico">⌕</span><input id="q" aria-label="搜索数码兽（中文名 / 日文名 / 编号）" placeholder="搜索：中文名 / 日文名 / 编号，如 亚古兽、アグモン、21"></div>
+      <div class="search"><span class="ico">⌕</span><input id="q" aria-label="搜索数码兽（中文名 / 日文名 / 编号）" title="编号按包含匹配：输 0 显示所有含 0 的编号；支持中 / 日 / 英名" placeholder="搜索：中文名 / 日文名 / 编号，如 亚古兽、アグモン、21"><button class="qclear" id="qclear" type="button" aria-label="清空搜索" title="清空搜索">✕</button></div>
       <button class="btn" id="openPath" title="查询两只数码兽之间的进化路线">进化路线</button>
       <div class="viewtabs" role="tablist" aria-label="视图切换">
         <button class="vtab on" data-view="cards">图鉴卡片</button>
@@ -862,7 +892,7 @@ body.light .langsw button.on{color:#0b2233}
       <button class="gtool" id="lfit" title="适应窗口（双击空白处同样生效）">适应窗口</button>
     </div>
     <div class="lside" id="lside">
-      <div class="lsq"><input id="lsideSearch" aria-label="筛选左侧数码兽列表" placeholder="搜索编号 / 中文名 / 日文名" autocomplete="off"><span class="lsicount" id="lsicount" title="当前列表条数">475</span></div>
+      <div class="lsq"><input id="lsideSearch" aria-label="筛选左侧数码兽列表" placeholder="搜索编号 / 中文名 / 日文名" autocomplete="off"><button class="qclear" id="lsclear" type="button" aria-label="清空列表搜索" title="清空列表搜索">✕</button><span class="lsicount" id="lsicount" title="当前列表条数">475</span></div>
       <div class="lsl" id="lsidelist"></div>
     </div>
     <div class="lviewport" id="lviewport">
@@ -880,6 +910,7 @@ body.light .langsw button.on{color:#0b2233}
 <div class="mask" id="mask"></div>
 <aside class="drawer" id="drawer">
   <button class="dback" id="dback">‹ 返回</button>
+  <button class="dcopy" id="dcopy" type="button" title="复制此页链接" aria-label="复制此页链接"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></button>
   <button class="dclose" id="dclose">✕</button>
   <div id="dbody"></div>
 </aside>
@@ -887,6 +918,23 @@ body.light .langsw button.on{color:#0b2233}
 <div class="dview" id="dview">
   <button id="dHalf" type="button">半屏</button>
   <button id="dFull" type="button">全屏</button>
+</div>
+<div class="copytoast" id="copytoast"></div>
+<div class="kbdhelp" id="kbdhelp" role="dialog" aria-modal="true" aria-label="键盘快捷键">
+  <div class="kbox">
+    <button class="kx" id="kx" type="button" aria-label="关闭">✕</button>
+    <h3>键盘快捷键</h3>
+    <table>
+      <tr><td><kbd>/</kbd></td><td>聚焦搜索</td></tr>
+      <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>相邻编号 / 谱系中心</td></tr>
+      <tr><td><kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>上一个 / 下一个谱系中心</td></tr>
+      <tr><td><kbd>L</kbd> / <kbd>C</kbd></td><td>谱系图 / 图鉴卡片</td></tr>
+      <tr><td><kbd>F</kbd></td><td>适应窗口</td></tr>
+      <tr><td><kbd>Enter</kbd> / <kbd>Space</kbd></td><td>打开聚焦的卡片 / 列表项 / 节点</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>关闭最上层浮层</td></tr>
+      <tr><td><kbd>?</kbd></td><td>打开 / 关闭本帮助</td></tr>
+    </table>
+  </div>
 </div>
 
 <div class="pmodal" id="pmodal">
@@ -1081,6 +1129,16 @@ function buildFilters(){
   }
 }
 
+function searchKey(d){
+  return ((d.cn0||d.cn||'')+' '+(d.jp0||d.jp||'')+' '+(d.en0||'')+' '+d.n+' '+String(d.n).padStart(3,'0')).toLowerCase();
+}
+function hlName(t){
+  const k=(kw||'').trim().toLowerCase().replace(/^no\.?\s*/i,'').replace(/^#/,'');
+  if(!k||/^\d+$/.test(k)) return escTxt(t);
+  const i=String(t).toLowerCase().indexOf(k);
+  if(i<0) return escTxt(t);
+  return escTxt(t.slice(0,i))+'<mark>'+escTxt(t.slice(i,i+k.length))+'</mark>'+escTxt(t.slice(i+k.length));
+}
 function match(d){
   if(FS.size && !FS.has(d.s)) return false;
   if(FA.size && !FA.has(d.a)) return false;
@@ -1090,7 +1148,7 @@ function match(d){
     if(/^\d+$/.test(k)){                              // 编号按「包含」匹配：输 0 → 含 0 的全部；输 00 → 必须含连续两个 0
       return String(d.n).padStart(3,'0').indexOf(k)>=0;
     }
-    return (d.cn&&d.cn.toLowerCase().includes(k)) || (d.jp&&d.jp.toLowerCase().includes(k));
+    return searchKey(d).includes(k);
   }
   return true;
 }
@@ -1102,11 +1160,11 @@ function render(){
   if(!list.length){ g.innerHTML='<div class="empty">没有匹配的数码兽，换个关键词试试～</div>'; return; }
   g.innerHTML=list.map(d=>{
     const sc=stageColor[d.s]||'#8fa4c9', ac=attrColor[d.a]||'var(--unk)';
-    return `<article class="card" data-n="${d.n}" style="--glow:${sc}22">
+    return `<article class="card" data-n="${d.n}" tabindex="0" role="button" aria-label="${escTxt(nameOf(d))}" style="--glow:${sc}22">
       <div class="top">${pic(d.n)}
         <div class="names">
-          <div class="nm">${nameOf(d)}</div>
-          <div class="jp">No.${String(d.n).padStart(3,'0')}${d.cn&&d.cn!==d.jp?' · '+d.jp:''}</div>
+          <div class="nm">${hlName(nameOf(d))}</div>
+          <div class="jp">No.${String(d.n).padStart(3,'0')}${d.cn&&d.cn!==d.jp?' · '+hlName(d.jp):''}</div>
         </div>
       </div>
       <div class="bot">
@@ -1456,18 +1514,18 @@ function routeSuggest(q){
   const num=isNum?parseInt(t,10):null;
   N.forEach(d=>{
     if(!sugPass(d)) return;
-    const cn=(d.cn||'').toLowerCase(), jp=(d.jp||'').toLowerCase(), no=String(d.n);
+    const cn=(d.cn||'').toLowerCase(), jp=(d.jp||'').toLowerCase(), en=(d.en0||'').toLowerCase(), zh=(d.cn0||'').toLowerCase(), no=String(d.n);
     let s=99;
     if(isNum){
       const s0=String(num);
       if(d.n===num) s=0;
       else if(no.startsWith(s0)) s=1;
       else if(no.padStart(3,'0').indexOf(s0)>=0) s=2;   // 编号「包含」也能搜到（输 0 出含 0 的）
-      else if(cn.includes(low)||jp.includes(low)) s=3;
+      else if(cn.includes(low)||jp.includes(low)||en.includes(low)||zh.includes(low)) s=3;
     }else{
-      if(cn===low||jp===low) s=0;
-      else if(cn.startsWith(low)||jp.startsWith(low)) s=1;
-      else if(cn.includes(low)||jp.includes(low)) s=2;
+      if(cn===low||jp===low||en===low||zh===low) s=0;
+      else if(cn.startsWith(low)||jp.startsWith(low)||en.startsWith(low)||zh.startsWith(low)) s=1;
+      else if(cn.includes(low)||jp.includes(low)||en.includes(low)||zh.includes(low)) s=2;
     }
     if(s<99) push(d,s);
   });
@@ -1592,7 +1650,7 @@ function comboInit(side){
     } else if(e.key==='Enter'){
       if(menu.classList.contains('on') && items[act]){ choose(items[act]); e.preventDefault(); }
       else { runPath(false); }
-    } else if(e.key==='Escape'){ closeMenu(); }
+    } else if(e.key==='Escape'){ if(menu.classList.contains('on')){ closeMenu(); e.stopPropagation(); } }
   });
 }
 function renderPick(){
@@ -1710,8 +1768,8 @@ qInput.addEventListener('compositionend',()=>{ qComposing=false; clearTimeout(qT
 qInput.addEventListener('input',()=>{ if(qComposing) return; clearTimeout(qTimer); qTimer=setTimeout(applyQ,120); });
 $('#clrFilters').onclick=()=>{
   FS.clear(); FA.clear(); FC.clear(); kw='';
-  const q=$('#q'); if(q) q.value='';
-  const ls=$('#lsideSearch'); if(ls) ls.value='';
+  const q=$('#q'); if(q){ q.value=''; q.dispatchEvent(new Event('input')); }
+  const ls=$('#lsideSearch'); if(ls){ ls.value=''; ls.dispatchEvent(new Event('input')); }
   if(typeof lsearch!=='undefined' && lsearch && LV.pending!==true) lsearch.value=nameOf(BY[LV.center]);
   refreshFilters();
   if(typeof filterSideList==='function') filterSideList();
@@ -1731,7 +1789,7 @@ $('#pmodal').onclick=e=>{
   if(e.target.id==='pmodal' && !pmStartInside) $('#pmodal').classList.remove('on');
   pmStartInside=false;
 };
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeDrawer(); $('#pmodal').classList.remove('on');} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const t=__topLayer(); if(t==='pmodal') $('#pmodal').classList.remove('on'); else if(t==='drawer') closeDrawer(); } });
 
 $('#s-num').textContent=N.length;
 $('#s-edge').textContent=DATA.edge;
@@ -1806,7 +1864,7 @@ function shortestRoutes(a,b,maxN){
 const lsideList=$('#lsidelist'), lsideSearch=$('#lsideSearch');
 function buildSideList(){
   lsideList.innerHTML=N.slice().sort((a,b)=>a.n-b.n).map(d=>
-    `<div class="lsi" data-n="${d.n}" data-ko="${String(d.n).padStart(3,'0')}" data-k="${((d.cn||'')+' '+(d.jp||'')+' '+d.n+' '+String(d.n).padStart(3,'0')).toLowerCase()}">
+    `<div class="lsi" data-n="${d.n}" tabindex="0" role="button" data-ko="${String(d.n).padStart(3,'0')}" data-k="${searchKey(d)}">
       <img width="112" height="112" decoding="async" loading="lazy" fetchpriority="low" src="${iconPath(d.n)}" alt="${nameOf(d)} 图标" onerror="this.style.opacity=.15">
       <div class="txt"><span class="nm">${nameOf(d)}</span><span class="jp">${d.jp&&d.jp!==nameOf(d)?d.jp:''}</span></div>
       <span class="no">No.${String(d.n).padStart(3,'0')}</span>
@@ -2023,7 +2081,7 @@ function buildLineage(center, keepView){
     const expd=LV.exp.has(id);
     const canToggle = expd ? (kids[id]||[]).length>0 : (descN[id]>0);
     const badge = canToggle ? `<button class="lexp${expd?' open':''}" data-n="${id}" title="${expd?'收起这一支':'展开下一层'}">${expd?'–':'+'+descN[id]}</button>` : '';
-    return `<div class="${cls}" data-n="${id}" style="left:${p.x}px;top:${p.y}px;border-color:${isC?'#4fd8ff':sc+'66'};box-shadow:inset 3px 0 0 ${sc}">
+    return `<div class="${cls}" data-n="${id}" tabindex="0" role="button" style="left:${p.x}px;top:${p.y}px;border-color:${isC?'#4fd8ff':sc+'66'};box-shadow:inset 3px 0 0 ${sc}">
       <img width="112" height="112" decoding="async" src="${iconPath(id)}" alt="" onerror="this.style.opacity=.12">
       <div class="lt"><b>${nameOf(d)}</b><span>No.${String(id).padStart(3,'0')} · ${d.s}</span></div>
       <button class="linfo" data-n="${id}" title="查看完整详情">i</button>${upN[id]?`<button class="lexp up" data-n="${id}" title="展开上游进化源（这只从哪里进化来）">↑${upN[id]>99?'99+':upN[id]}</button>`:''}${badge}
@@ -2135,7 +2193,7 @@ function buildChain(){
       const x=i*COLGAP, d=BY[id], sc=stageColor[d.s]||'#8fa4c9';
       const isA=(ri===0&&i===0), isB=(ri===0&&i===route.length-1);
       const cls='lnode'+(isA||isB?' center':'');
-      nodesHTML+=`<div class="${cls}" data-n="${id}" style="left:${x}px;top:${y}px;border-color:${(isA||isB)?'#ffd166':sc+'66'}">
+      nodesHTML+=`<div class="${cls}" data-n="${id}" tabindex="0" role="button" style="left:${x}px;top:${y}px;border-color:${(isA||isB)?'#ffd166':sc+'66'}">
         ${isA?'<i class="lnum" style="background:#ffd166">A</i>':''}${isB?'<i class="lnum" style="background:#ffd166">B</i>':''}
         <img width="112" height="112" decoding="async" src="${iconPath(id)}" alt="" onerror="this.style.opacity=.12">
         <div class="lt"><b>${nameOf(d)}</b><span>No.${String(id).padStart(3,'0')} · ${d.s}</span></div>
@@ -2273,6 +2331,7 @@ function renderRoute(){
   const A=sel[0], B=sel[1];
   let h=`<div class="lr-h">多选系谱<span class="lr-n">已选 ${sel.length}/2 只</span>
     <span class="sp"></span>
+    <button class="lr-x" id="lrCopy" type="button">复制链接</button>
     <button class="lr-x" id="lrRe" ${sel.length?'':'disabled'}>重新选择</button>
     <button class="lr-x" id="lrClear">清空</button>
     <button class="lr-x" id="lrClose">退出多选</button></div>`;
@@ -2304,6 +2363,7 @@ function renderRoute(){
 function bindRoute(){
   const box=$('#lroute');
   const go=box.querySelector('#lrGo');
+  const cp=box.querySelector('#lrCopy'); if(cp) cp.onclick=()=>copyShareLink({multi:LV.sel.join(',')});
   if(go) go.onclick=()=>{
     if(LV.sel.length<2) return;
     LV.confirmed=true; LV.lrForce=null;
@@ -2499,7 +2559,7 @@ document.addEventListener('click',e=>{
   if(!e.target.isConnected) return;            /* 点击后自身被重建的控件（如筛选 chip），不当作点外部 */
   if(!e.target.closest('.toolbar')) closeFilterLayer();
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeFilterLayer(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&__topLayer()==='filter') closeFilterLayer(); });
 window.__lvRedraw=function(){ if(LV.inited) buildLineage(LV.center); };
 window.__lvFilter=function(){ if(LV.inited && LV.on) buildLineage(LV.center); if(typeof filterSideList==='function') filterSideList(); };
 
@@ -2592,7 +2652,7 @@ function suggest(){
   const num=/^\d+$/.test(k)?parseInt(k,10):null;
   const list=N.filter(d=> num!==null
       ? String(d.n).padStart(3,'0').indexOf(k)>=0
-      : ((d.cn&&d.cn.toLowerCase().includes(k))||d.jp.toLowerCase().includes(k))).slice(0,10);
+      : searchKey(d).includes(k)).slice(0,10);
   if(!list.length){ lsug.innerHTML='<div class="sug empty">没有匹配的数码兽</div>'; lsug.style.display='block'; return; }
   lsug.innerHTML=list.map(d=>`<div class="sug" data-n="${d.n}"><img width="112" height="112" decoding="async" src="${iconPath(d.n)}" alt=""><span>${nameOf(d)}</span><em>No.${String(d.n).padStart(3,'0')} · ${d.s}</em></div>`).join('');
   lsug.style.display='block';
@@ -2626,6 +2686,7 @@ restoreState();
   if(dUrl && BY[+dUrl]){ LV.center=+dUrl; LV.pending=false; LV.exp=new Set([LV.center]); LV.expUp=new Set(); LV.extra=new Set(); LV.expCenter=LV.center; }
   if(q.get('q')){ kw=q.get('q'); if($('#q')) $('#q').value=kw; render(); }
   if(q.get('view')==='lineage' || (q.get('lineage') && BY[+q.get('lineage')])) setView('lineage');
+  if(q.get('dr') && BY[+q.get('dr')]) setTimeout(()=>{ try{ openDrawer(+q.get('dr')); }catch(e){} },60);
   if(q.get('fit')==='1') setTimeout(()=>fitLineage('fit'),60);
   if(q.get('multi')){
     const ids=q.get('multi').split(/[,\s]+/).map(Number).filter(n=>BY[n]).slice(0,2);
@@ -2653,6 +2714,22 @@ let LANG='zh';
 let CURDRAW=0;
 const __zhText=new WeakMap(), __zhAttr=new WeakMap();
 UI_LANG.en['有等级数值']='Levels shown'; UI_LANG.ja['有等级数值']='レベル値あり';
+UI_LANG.en['清空搜索']='Clear search'; UI_LANG.ja['清空搜索']='検索をクリア';
+UI_LANG.en['清空列表搜索']='Clear list search'; UI_LANG.ja['清空列表搜索']='リスト検索をクリア';
+UI_LANG.en['复制此页链接']='Copy link to this page'; UI_LANG.ja['复制此页链接']='このページへのリンクをコピー';
+UI_LANG.en['复制链接']='Copy link'; UI_LANG.ja['复制链接']='リンクをコピー';
+UI_LANG.en['链接已复制']='Link copied'; UI_LANG.ja['链接已复制']='リンクをコピーしました';
+UI_LANG.en['键盘快捷键']='Keyboard shortcuts'; UI_LANG.ja['键盘快捷键']='キーボードショートカット';
+UI_LANG.en['聚焦搜索']='Focus search'; UI_LANG.ja['聚焦搜索']='検索にフォーカス';
+UI_LANG.en['相邻编号 / 谱系中心']='Previous / next No. or lineage center'; UI_LANG.ja['相邻编号 / 谱系中心']='前後の番号／系譜センター';
+UI_LANG.en['上一个 / 下一个谱系中心']='Previous / next lineage center'; UI_LANG.ja['上一个 / 下一个谱系中心']='前／次の系譜センター';
+UI_LANG.en['谱系图 / 图鉴卡片']='Lineage / Card view'; UI_LANG.ja['谱系图 / 图鉴卡片']='系譜図／図鑑カード';
+UI_LANG.en['适应窗口']='Fit to window'; UI_LANG.ja['适应窗口']='ウィンドウに合わせる';
+UI_LANG.en['打开聚焦的卡片 / 列表项 / 节点']='Open focused card / list item / node'; UI_LANG.ja['打开聚焦的卡片 / 列表项 / 节点']='フォーカス中のカード／リスト項目／ノードを開く';
+UI_LANG.en['关闭最上层浮层']='Close topmost overlay'; UI_LANG.ja['关闭最上层浮层']='最前面のオーバーレイを閉じる';
+UI_LANG.en['打开 / 关闭本帮助']='Toggle this help'; UI_LANG.ja['打开 / 关闭本帮助']='このヘルプを開く／閉じる';
+UI_LANG.en['编号按包含匹配：输 0 显示所有含 0 的编号；支持中 / 日 / 英名']='No. matches by substring: typing 0 shows all Nos. containing 0; searches Chinese / Japanese / English names'; UI_LANG.ja['编号按包含匹配：输 0 显示所有含 0 的编号；支持中 / 日 / 英名']='番号は部分一致：0 を入力すると 0 を含む番号をすべて表示；中国語／日本語／英語名で検索可能';
+
 UI_LANG.en['无加成']='No bonus'; UI_LANG.ja['无加成']='補正なし';
 Object.keys(TYPE_EN).forEach(k=>{ if(!UI_LANG.en[k]) UI_LANG.en[k]=TYPE_EN[k]; });
 Object.keys(TYPE_JA).forEach(k=>{ if(!UI_LANG.ja[k]) UI_LANG.ja[k]=TYPE_JA[k]; });
@@ -2825,7 +2902,7 @@ function initLang(){
   const btns=document.querySelectorAll('#langsw button');
   btns.forEach(b=>b.onclick=()=>setLang(b.dataset.l));
   document.querySelector('#langsw').addEventListener('click',e=>e.stopPropagation());
-  if(l!=='zh') setLang(l); else { applyNameLang(); syncLangBtns(); }
+  if(l!=='zh') setLang(l); else { applyNameLang(); syncLangBtns(); buildSideList(); if(kw) render(); }
   const mo=new MutationObserver(()=>{ if(LANG==='zh'||__busy) return; if(__tick) return; __tick=setTimeout(()=>{__tick=0; applyNow(document.body);},24); });
   mo.observe(document.body,{childList:true,subtree:true,characterData:true});
 }
@@ -2833,6 +2910,67 @@ function initLang(){
 try{ initLang(); }catch(e){ console.error(e); }
 /* 兜底：深链/记忆恢复完成后再按当前搜索+筛选刷新一次左列表，避免先建列表后填搜索导致计数与滚动条不一致 */
 window.addEventListener('load',()=>{ try{ if(typeof LV!=='undefined'&&LV.on&&typeof filterSideList==='function') filterSideList(); }catch(e){} });
+
+/* ---------------- UX 批次1：搜索/分享/帮助/无障碍 ---------------- */
+function __topLayer(){
+  const h=document.getElementById('kbdhelp'); if(h&&h.classList.contains('on')) return 'help';
+  const pm=document.getElementById('pmodal'); if(pm&&pm.classList.contains('on')) return 'pmodal';
+  const tb=document.querySelector('.toolbar'); if(tb&&tb.classList.contains('showf')) return 'filter';
+  const dr=document.getElementById('drawer'); if(dr&&dr.classList.contains('on')) return 'drawer';
+  return null;
+}
+let __toastT=0;
+function showToast(msg){
+  const t=document.getElementById('copytoast'); if(!t) return;
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(__toastT); __toastT=setTimeout(()=>t.classList.remove('on'),1600);
+}
+function fallbackCopy(url){
+  const ta=document.createElement('textarea'); ta.value=url; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  let ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta);
+  showToast(ok?((UI_LANG[LANG]&&UI_LANG[LANG]['链接已复制'])||'链接已复制'):'复制失败，请手动复制地址栏');
+}
+function copyShareLink(extra){
+  const u=new URL(location.href); u.search='';
+  const p=u.searchParams;
+  p.set('view',(typeof LV!=='undefined'&&LV.on)?'lineage':'cards');
+  if(typeof LV!=='undefined'&&LV.on&&LV.center) p.set('d',LV.center);
+  Object.keys(extra||{}).forEach(k=>p.set(k,extra[k]));
+  if(typeof LANG!=='undefined'&&LANG!=='zh') p.set('lang',LANG);
+  const url=u.toString();
+  const msg=(UI_LANG[LANG]&&UI_LANG[LANG]['链接已复制'])||'链接已复制';
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(()=>showToast(msg)).catch(()=>fallbackCopy(url)); }
+  else fallbackCopy(url);
+}
+function bindClear(btnId,inputId){
+  const b=document.getElementById(btnId), inp=document.getElementById(inputId);
+  if(!b||!inp) return;
+  const sync=()=>b.classList.toggle('on',!!inp.value);
+  inp.addEventListener('input',sync); sync();
+  b.onclick=()=>{ inp.value=''; inp.dispatchEvent(new Event('input')); inp.focus(); };
+}
+bindClear('qclear','q'); bindClear('lsclear','lsideSearch');
+if($('#dcopy')) $('#dcopy').onclick=()=>copyShareLink({dr:CURDRAW});
+(function(){
+  const h=document.getElementById('kbdhelp'); if(!h) return;
+  const close=()=>h.classList.remove('on');
+  document.getElementById('kx').onclick=close;
+  h.addEventListener('click',e=>{ if(e.target===h) close(); });
+  document.addEventListener('keydown',e=>{
+    const typing=e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.isContentEditable);
+    if(e.key==='?'&&!typing){ e.preventDefault(); h.classList.toggle('on'); return; }
+    if(e.key==='Escape'&&__topLayer()==='help'){ close(); }
+  });
+})();
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  const t=e.target; if(!t||!t.classList) return;
+  if(t.classList.contains('card')){ e.preventDefault(); openDrawer(+t.dataset.n); return; }
+  const li=t.closest&&t.closest('.lsi'); if(li){ e.preventDefault(); li.click(); return; }
+  const ln=t.closest&&t.closest('.lnode'); if(ln){ e.preventDefault(); ln.click(); return; }
+});
 
 /* ---------------- 键盘快捷键 ---------------- */
 document.addEventListener('keydown',e=>{
