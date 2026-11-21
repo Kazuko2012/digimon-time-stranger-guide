@@ -950,7 +950,11 @@ let FS=new Set(), FA=new Set(), FC=new Set(), kw='';
 function chip(text,on,cb){
   const el=document.createElement('div');
   el.className='chip'+(on?' on':''); el.textContent=text;
-  el.onclick=cb; return el;
+  el.onclick=ev=>{
+    if(ev&&ev.stopPropagation) ev.stopPropagation();   /* 点选筛选不冒泡给「点外部关闭」 */
+    cb(ev);
+  };
+  return el;
 }
 function condTest(d,name){
   const t=((d.c)||[]).filter(x=>x&&x!=='无');
@@ -2356,7 +2360,17 @@ function syncToolbar(){
 }
 
 function closeFilterLayer(){ const tb=document.querySelector('.toolbar'); if(tb.classList.contains('showf')){ tb.classList.remove('showf'); fbtnSync(); } }
-addEventListener('scroll',()=>{ syncToolbar(); closeFilterLayer(); },{passive:true});
+let uScrollUntil=0;               /* 只有「用户主动滚动」才收起筛选浮层；筛选重排/补偿滚动不算 */
+const markUserScroll=()=>{ uScrollUntil=performance.now()+320; };
+addEventListener('wheel',markUserScroll,{passive:true});
+addEventListener('touchmove',markUserScroll,{passive:true});
+addEventListener('keydown',e=>{
+  if(/^(Arrow(Up|Down|Left|Right)|Page(Up|Down)|Home|End|Spacebar| )/.test(e.key)) markUserScroll();
+});
+addEventListener('scroll',()=>{
+  syncToolbar();
+  if(performance.now()<=uScrollUntil) closeFilterLayer();
+},{passive:true});
 syncToolbar();
 fbtnSync();
 document.getElementById('fbToggle').onclick=e=>{
@@ -2367,7 +2381,10 @@ document.getElementById('fbToggle').onclick=e=>{
   else { tbcManual=true; setTbc(true); return; }
   fbtnSync();
 };
-document.addEventListener('click',e=>{ if(!e.target.closest('.toolbar')) closeFilterLayer(); });
+document.addEventListener('click',e=>{
+  if(!e.target.isConnected) return;            /* 点击后自身被重建的控件（如筛选 chip），不当作点外部 */
+  if(!e.target.closest('.toolbar')) closeFilterLayer();
+});
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeFilterLayer(); });
 window.__lvRedraw=function(){ if(LV.inited) buildLineage(LV.center); };
 window.__lvFilter=function(){ if(LV.inited && LV.on) buildLineage(LV.center); if(typeof filterSideList==='function') filterSideList(); };
