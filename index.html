@@ -1221,7 +1221,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.6 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.7 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
@@ -2879,6 +2879,13 @@ addEventListener('scroll',()=>{
 },{passive:true});
 syncToolbar();
 fbtnSync();
+/* v1.9.7 默认收起筛选：首屏只留搜索 / 视图切换 / 语言等常用控件，点「显示筛选」以浮层展开，不挤动下方卡片 */
+(function initFilterCollapsed(){
+  tbcManual=true;
+  document.body.classList.add('tbc');
+  tbcOn=true;
+  fbtnSync();
+})();
 document.getElementById('fbToggle').onclick=e=>{
   e.stopPropagation();
   const tb=document.querySelector('.toolbar');
