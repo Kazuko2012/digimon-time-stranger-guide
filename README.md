@@ -6,6 +6,20 @@
 
 An offline field guide and evolution-graph explorer for all 475 Digimon in *Digimon Story: Time Stranger*. Everything runs from a single `index.html` — no build step, no runtime dependencies.
 
+## 预览 / Screenshots
+
+**图鉴卡片视图**：475 只全列表，顶部三组筛选（阶段 / 属性 / 条件）与「标准 / 大图 / 无图」密度切换。
+
+![图鉴卡片视图](docs/screenshot-deck.webp)
+
+**谱系图视图**：以亚古兽为中心，左侧窄栏 475 只可切换，节点左 `↑N` 上溯、右 `+N` 下展，连线为进化关系（无箭头）。  
+
+![谱系图视图](docs/screenshot-lineage.webp)
+
+**详情抽屉**：基础数值、Lv99 数值、耐性与技能、图鉴说明；「可进化为」列表里鼠标悬停任一条目，即显示进化成该形态所需的条件。
+
+![详情抽屉与悬停进化条件](docs/screenshot-drawer.webp)
+
 ---
 
 ## 功能 / Features
@@ -49,8 +63,10 @@ An offline field guide and evolution-graph explorer for all 475 Digimon in *Digi
 │   └── digimon-lv99.csv      # 各性格 Lv99 数值
 ├── scripts
 │   └── build_single.py       # 打成一个自包含的离线单文件版
-├── docs
-│   └── preview.png           # 预览图
+├── docs                     # README 用真实截图
+│   ├── screenshot-deck.webp
+│   ├── screenshot-lineage.webp
+│   └── screenshot-drawer.webp
 └── .github/workflows/pages.yml   # 推 main 自动发布到 GitHub Pages
 ```
 
