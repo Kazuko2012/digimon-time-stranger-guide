@@ -1065,6 +1065,17 @@ body.light .lmini{background:rgba(255,255,255,.95)}
   .dclose,.dcopy{width:32px;height:32px}
   .dtop{gap:6px;margin-right:-4px}
 }
+/* ================= v1.9.6 筛选区改为「一行一组」 ================= */
+.filters{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.fgroup{display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:100%}
+.fgroup>.flabel{flex:0 0 56px;width:56px;min-width:56px;display:inline-flex;align-items:center;justify-content:flex-start;
+  white-space:nowrap;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--sub);padding-right:8px}
+@media (max-width:640px){
+  .filters{gap:8px}
+  .filters>button{align-self:flex-start;width:auto}
+  .fgroup{padding-left:44px;position:relative}
+  .fgroup>.flabel{position:absolute;left:0;top:7px;width:auto;min-width:0;flex:none;font-size:11.5px;padding-right:0}
+}
 </style>
 </head>
 <body>
@@ -1210,7 +1221,7 @@ body.light .lmini{background:rgba(255,255,255,.95)}
 
 <footer>
   数据来源：AppMedia《数码宝贝物语 时空异客》图鉴（工具页 / 究极体 / 超究极体 / DLC）。英文 / 日文名称与简介参考 digimon.net 官方图鉴。本页为离线整理版，仅供游戏攻略参考，版权归各权利人所有。<br>
-  <span id="buildver" style="opacity:.75">v1.9.5 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
+  <span id="buildver" style="opacity:.75">v1.9.6 · 构建 2026-11-21 · 含移动端适配 / 多语言对齐 / 面板防重叠 / 宽度对齐 / GitHub 入口 / 抽屉顶栏统一</span><br><a href="https://github.com/Kazuko2012/digimon-time-stranger-guide" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:2px">GitHub 仓库（源码 / 更新日志 / 问题反馈）</a>
 </footer>
 
 <script>
